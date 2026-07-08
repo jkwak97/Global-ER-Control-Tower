@@ -14,12 +14,14 @@
     --primary:#1E4670;
     --primary-hover:#2C639B;
     --teal:#33AEC4;
+    --pearl:#DBD5C6;
+    --pearl-ink:#494235;
     --line:#DFE4EB;
     --surface:#ECF1F6;
     --text-dim:#55606E;
     --text-faint:#87919F;
     --flash:#DFF2F6;
-    --shadow:0 1px 2px rgba(15,42,74,.05),0 4px 18px rgba(15,42,74,.06);
+    --shadow:0 1px 1px rgba(15,42,74,.04),0 3px 10px rgba(15,42,74,.05);
 
     --map-bg:#0B1220;
     --map-panel:#16233A;
@@ -43,10 +45,12 @@
       --navy:#7FB0E0; --navy-2:#9CC4EC;
       --primary:#2F5E93; --primary-hover:#3D77B5;
       --teal:#3BB8CE;
+      --pearl:#C6BFAC;
+      --pearl-ink:#23262E;
       --line:#242F3F; --surface:#1A2331;
       --text-dim:#A0ACBD; --text-faint:#6B7789;
       --flash:#14333C;
-      --shadow:0 1px 2px rgba(0,0,0,.35),0 6px 22px rgba(0,0,0,.3);
+      --shadow:0 1px 1px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.28);
     }
   }
   :root[data-theme="dark"]{
@@ -54,20 +58,24 @@
     --navy:#7FB0E0; --navy-2:#9CC4EC;
     --primary:#2F5E93; --primary-hover:#3D77B5;
     --teal:#3BB8CE;
+    --pearl:#C6BFAC;
+    --pearl-ink:#23262E;
     --line:#242F3F; --surface:#1A2331;
     --text-dim:#A0ACBD; --text-faint:#6B7789;
     --flash:#14333C;
-    --shadow:0 1px 2px rgba(0,0,0,.35),0 6px 22px rgba(0,0,0,.3);
+    --shadow:0 1px 1px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.28);
   }
   :root[data-theme="light"]{
     --bg:#F3F6F9; --card:#FFFFFF; --ink:#141B26;
     --navy:#1E4670; --navy-2:#2C639B;
     --primary:#1E4670; --primary-hover:#2C639B;
     --teal:#33AEC4;
+    --pearl:#DBD5C6;
+    --pearl-ink:#494235;
     --line:#DFE4EB; --surface:#ECF1F6;
     --text-dim:#55606E; --text-faint:#87919F;
     --flash:#DFF2F6;
-    --shadow:0 1px 2px rgba(15,42,74,.05),0 4px 18px rgba(15,42,74,.06);
+    --shadow:0 1px 1px rgba(15,42,74,.04),0 3px 10px rgba(15,42,74,.05);
   }
 
   *{box-sizing:border-box;}
@@ -79,8 +87,8 @@
   .wrap{max-width:1100px;margin:0 auto;padding:52px 28px 110px;}
 
   .hero{margin-bottom:8px;}
-  .hero .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--navy-2);text-transform:uppercase;margin-bottom:10px;}
-  .hero h1{font-size:30px;font-weight:800;letter-spacing:-.015em;margin:0 0 14px;line-height:1.2;color:var(--navy);text-wrap:balance;}
+  .hero .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;color:var(--text-faint);text-transform:uppercase;margin-bottom:10px;}
+  .hero h1{font-size:28px;font-weight:800;letter-spacing:-.012em;margin:0 0 14px;line-height:1.2;color:var(--navy);text-wrap:balance;}
   .hero p{color:var(--text-dim);font-size:14.5px;line-height:1.7;max-width:680px;margin:0 0 16px;}
   .hero p a{color:var(--teal);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
   .hero p.accent-line{border-bottom:3px solid var(--teal);padding-bottom:20px;margin-bottom:26px;}
@@ -261,7 +269,7 @@
   .er-row-type td{color:var(--text-dim);}
   .er-input{width:60px;border:1px solid var(--line);border-radius:6px;padding:5px 6px;font-family:var(--mono);font-size:12px;background:var(--card);color:var(--ink);transition:border-color .15s;}
   .er-input:focus{border-color:var(--teal);outline:none;}
-  .er-btn{background:var(--primary);color:#fff;border:1px solid transparent;padding:8px 14px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;transition:background .15s;}
+  .er-btn{background:var(--primary);color:#fff;border:1px solid transparent;padding:8px 14px;border-radius:7px;font-size:12.5px;font-weight:700;cursor:pointer;transition:background .15s;}
   .er-btn:hover{background:var(--primary-hover);}
   .er-btn.ghost{background:none;border:1px solid var(--line);color:var(--text-dim);}
   .er-btn.ghost:hover{color:var(--ink);border-color:var(--text-faint);}
@@ -324,11 +332,13 @@
   .er-chart-seg{height:100%;display:flex;align-items:center;justify-content:flex-end;color:#fff;font-family:var(--mono);font-size:10px;padding-right:6px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums;}
   .er-chart-seg.a{background:var(--primary);}
   .er-chart-seg.b{background:var(--teal);}
+  .er-chart-seg.jv{background:var(--pearl);color:var(--pearl-ink);}
   .er-chart-total{width:64px;flex-shrink:0;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;}
   .er-chart-legend{display:flex;gap:18px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--text-dim);}
   .er-chart-legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;}
   .er-chart-legend .dot.a{background:var(--primary);}
   .er-chart-legend .dot.b{background:var(--teal);}
+  .er-chart-legend .dot.jv{background:var(--pearl);}
   .er-btn.ghost.active{background:var(--primary);color:#fff;border-color:var(--primary);}
 
   /* 법인별 상세 드롭다운 */
@@ -356,6 +366,7 @@
   .er-dt-bar{height:100%;transition:width .45s cubic-bezier(.2,.8,.3,1);}
   .er-dt-bar.a{background:var(--primary);}
   .er-dt-bar.b{background:var(--teal);}
+  .er-dt-bar.jv{background:var(--pearl);}
   .er-dt-val{width:74px;flex-shrink:0;font-family:var(--mono);font-size:12px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;}
   .er-dt-stats-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;}
   .er-dt-stats-head .ttl{font-family:var(--mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;}
@@ -381,6 +392,17 @@
   .er-stat .lbl{font-family:var(--mono);font-size:9.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.05em;line-height:1.5;}
   .er-stat .val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--navy);margin-top:3px;font-variant-numeric:tabular-nums;}
   .er-stat .val small{font-size:11px;font-weight:400;color:var(--text-dim);margin-left:1px;}
+
+  /* 월별 DB 업로드 */
+  .er-upload{padding:20px 18px;}
+  .er-upload-zone{border:1.5px dashed var(--line);border-radius:8px;padding:26px 18px;text-align:center;transition:border-color .15s,background .15s;}
+  .er-upload-zone.drag{border-color:var(--teal);background:color-mix(in srgb,var(--teal) 7%,transparent);}
+  .er-upload-zone p{margin:0 0 6px;font-size:13.5px;color:var(--text-dim);}
+  .er-upload-zone .hint{font-size:11.5px;color:var(--text-faint);line-height:1.65;margin-top:8px;}
+  .er-link-btn{background:none;border:none;color:var(--teal);font-weight:700;cursor:pointer;font-size:13.5px;text-decoration:underline;text-underline-offset:2px;padding:0;font-family:var(--sans);}
+  .er-upload-status{margin-top:12px;font-size:12px;font-family:var(--mono);color:var(--text-dim);min-height:16px;line-height:1.6;}
+  .er-upload-status.ok{color:var(--s-rejected);}
+  .er-upload-status.err{color:var(--s-unionized);}
 
   @media(max-width:720px){
     .summary-grid{grid-template-columns:repeat(2,1fr);}
@@ -533,7 +555,7 @@
     <div class="er-two-col">
       <div class="er-panel">
         <div class="er-toolbar">
-          <span style="font-family:var(--mono);font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;">현장 인원 중 주재원 · 현채인 구성</span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;">전체 인원 중 주재원 · 현채인 구성</span>
         </div>
         <div id="er-donut" style="padding:18px;"></div>
       </div>
@@ -545,11 +567,8 @@
             <button type="button" class="er-dd-btn" onclick="erTrendDDToggle(event)"><span id="er-trend-dd-label">전체</span><span class="arw">▾</span></button>
             <div class="er-dd-menu" id="er-trend-dd-menu"></div>
           </div>
-          <button type="button" class="er-switch" id="er-trend-switch" onclick="erToggleTrendGroup()" role="switch" aria-checked="false" aria-label="현장/사무 전환">
-            <span class="er-switch-knob"></span>
-            <span class="er-switch-lbl">현장</span>
-            <span class="er-switch-lbl">사무</span>
-          </button>
+          <button type="button" class="er-btn ghost active" id="er-trend-g-현장" onclick="erToggleTrendGroup('현장')" aria-pressed="true">현장</button>
+          <button type="button" class="er-btn ghost active" id="er-trend-g-사무" onclick="erToggleTrendGroup('사무')" aria-pressed="true">사무</button>
         </div>
         <div id="er-trend" style="padding:14px 16px 10px;"></div>
       </div>
@@ -572,6 +591,20 @@
         <span style="font-size:11.5px;color:var(--text-faint);">법인을 클릭하면 인원 구성과 현장 지표가 열립니다</span>
       </div>
       <div id="er-entity-detail"></div>
+    </div>
+
+    <div class="er-panel">
+      <div class="er-toolbar">
+        <span style="font-family:var(--mono);font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;">월별 인원 DB 업로드</span>
+      </div>
+      <div class="er-upload">
+        <div class="er-upload-zone" id="er-upload-zone">
+          <input type="file" id="er-upload-input" accept=".xlsx" style="display:none;" onchange="erHandleUpload(this.files[0]); this.value='';">
+          <p>해외 인원 DB 엑셀 파일(.xlsx)을 여기로 끌어다 놓거나 <button type="button" class="er-link-btn" onclick="document.getElementById('er-upload-input').click()">파일 선택</button></p>
+          <p class="hint">기준일자 컬럼으로 기준월을 자동 인식해 반영합니다. 이전 월 데이터는 삭제되지 않고 누적 보관되어 상단 기준월 선택과 인원 추이 그래프에서 계속 확인할 수 있습니다.<br>파일은 브라우저 안에서만 처리되며 외부로 전송되지 않습니다.</p>
+          <div class="er-upload-status" id="er-upload-status"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1445,7 +1478,18 @@ function switchERTab(tab){
 }
 
 /* ================= E.R. Tracker : 법인 인원 현황 (드릴다운) ================= */
+/* 저장소 폴백: window.storage가 없으면 localStorage로 월별 데이터를 누적 보관 */
+if(!window.storage){
+  window.storage = {
+    async get(key){ const v = localStorage.getItem('gct:'+key); return v==null ? null : {value:v}; },
+    async set(key, val){ localStorage.setItem('gct:'+key, String(val)); }
+  };
+}
+
 const ER_TYPE_KEYS = ['주재원','현채인'];
+/* 단독법인 (그 외는 J/V — 차트 배색 구분용) */
+const ER_STANDALONE = ['ESAZ','ESMI(Holland)','ESMI(Lansing)'];
+function erIsJV(name){ return !ER_STANDALONE.includes(name); }
 const ER_GROUP_KEYS = ['사무','현장'];
 let erEntities = [];
 
@@ -1484,6 +1528,8 @@ async function loadERentities(){
       return;
     }
   }catch(e){ /* 저장소 접근 실패 - 아래 폴백으로 진행 */ }
+
+  if(erMonthCache[erSelectedMonth]){ erEntities = erMonthCache[erSelectedMonth]; return; }
 
   // 저장된 값이 없거나 저장소를 사용할 수 없는 경우: 알려진 기준월(2026-05)은 시드 데이터로 대체
   if(erSelectedMonth === '2026-05'){
@@ -1665,7 +1711,7 @@ function renderERChart(){
   const rows = erEntities.map(e=>{
     const aVal = groupHeadcount(e, '사무');
     const bVal = groupHeadcount(e, '현장');
-    return {name:e.name, total: aVal+bVal, aVal, bVal};
+    return {name:e.name, total: aVal+bVal, aVal, bVal, jv: erIsJV(e.name)};
   });
 
   const maxTotal = Math.max(...rows.map(r=>r.total), 1);
@@ -1680,7 +1726,7 @@ function renderERChart(){
         <div class="er-chart-track">
           <div class="er-chart-fill" style="width:${totalPct}%;">
             <div class="er-chart-seg a" style="width:${aPct}%;">${aPct>=18?r.aVal.toLocaleString():''}</div>
-            <div class="er-chart-seg b" style="width:${bPct}%;">${bPct>=18?r.bVal.toLocaleString():''}</div>
+            <div class="er-chart-seg b${r.jv?' jv':''}" style="width:${bPct}%;">${bPct>=18?r.bVal.toLocaleString():''}</div>
           </div>
         </div>
         <div class="er-chart-total">${r.total.toLocaleString()}명</div>
@@ -1688,7 +1734,8 @@ function renderERChart(){
   }).join('') + `
     <div class="er-chart-legend">
       <span><span class="dot a"></span>사무</span>
-      <span><span class="dot b"></span>현장</span>
+      <span><span class="dot b"></span>현장 · 단독법인</span>
+      <span><span class="dot jv"></span>현장 · J/V</span>
     </div>
   `;
 }
@@ -1729,7 +1776,7 @@ function renderERDetail(){
         </div>
         <div>
           <div class="er-dt-row"><span class="glbl">사무</span><div class="er-dt-track"><div class="er-dt-bar a" id="er-dtbar-a-${e.id}"></div></div><span class="er-dt-val" id="er-dtval-a-${e.id}"></span></div>
-          <div class="er-dt-row"><span class="glbl">현장</span><div class="er-dt-track"><div class="er-dt-bar b" id="er-dtbar-b-${e.id}"></div></div><span class="er-dt-val" id="er-dtval-b-${e.id}"></span></div>
+          <div class="er-dt-row"><span class="glbl">현장</span><div class="er-dt-track"><div class="er-dt-bar b${erIsJV(e.name)?' jv':''}" id="er-dtbar-b-${e.id}"></div></div><span class="er-dt-val" id="er-dtval-b-${e.id}"></span></div>
         </div>
         <div>
           <div class="er-dt-stats-head">
@@ -1830,31 +1877,31 @@ function renderERDonut(){
   const el = document.getElementById('er-donut');
   if(!el) return;
   const s = erComputeSummary();
-  const total = s.totalField;
-  if(total===0){ el.innerHTML = `<div class="er-empty">현장 인원 데이터가 없습니다.</div>`; return; }
-  const iseFrac = s.totalFieldISE/total, fseFrac = s.totalFieldFSE/total;
+  const total = s.totalAll;
+  if(total===0){ el.innerHTML = `<div class="er-empty">인원 데이터가 없습니다.</div>`; return; }
+  const iseFrac = s.totalISE/total, fseFrac = s.totalFSE/total;
   const R = 44, C = 2*Math.PI*R;
   el.innerHTML = `
   <div class="er-donut-wrap">
-    <svg viewBox="0 0 120 120" class="er-donut-svg" role="img" aria-label="현장 인원 주재원/현채인 구성 도넛 차트">
+    <svg viewBox="0 0 120 120" class="er-donut-svg" role="img" aria-label="전체 인원 주재원/현채인 구성 도넛 차트">
       <circle cx="60" cy="60" r="${R}" fill="none" stroke="var(--surface)" stroke-width="17"/>
       <circle class="er-donut-seg" cx="60" cy="60" r="${R}" fill="none" stroke="var(--teal)" stroke-width="17"
         stroke-dasharray="${(iseFrac*C).toFixed(2)} ${C.toFixed(2)}" transform="rotate(-90 60 60)"/>
       <circle class="er-donut-seg" cx="60" cy="60" r="${R}" fill="none" stroke="var(--primary)" stroke-width="17"
         stroke-dasharray="${(fseFrac*C).toFixed(2)} ${C.toFixed(2)}" stroke-dashoffset="${(-iseFrac*C).toFixed(2)}" transform="rotate(-90 60 60)"/>
       <text x="60" y="57" text-anchor="middle" class="er-donut-num">${total.toLocaleString()}</text>
-      <text x="60" y="73" text-anchor="middle" class="er-donut-cap">현장 인원</text>
+      <text x="60" y="73" text-anchor="middle" class="er-donut-cap">전체 인원</text>
     </svg>
     <div class="er-donut-legend">
-      <div><span class="dot ise"></span>현채인(ISE) <b>${s.totalFieldISE.toLocaleString()}명</b> · ${Math.round(iseFrac*100)}%</div>
-      <div><span class="dot fse"></span>주재원(FSE) <b>${s.totalFieldFSE.toLocaleString()}명</b> · ${Math.round(fseFrac*100)}%</div>
+      <div><span class="dot ise"></span>현채인(ISE) <b>${s.totalISE.toLocaleString()}명</b> · ${Math.round(iseFrac*100)}%</div>
+      <div><span class="dot fse"></span>주재원(FSE) <b>${s.totalFSE.toLocaleString()}명</b> · ${Math.round(fseFrac*100)}%</div>
     </div>
   </div>`;
 }
 
 /* 인원 추이 라인 차트 (월별) */
 let erTrendEntity = '전체';
-let erTrendGroup = '현장'; // '현장' | '사무'
+const erTrendGroups = {'현장':true, '사무':true}; // 중복 선택 가능 — 둘 다 켜면 전체 인원
 const erMonthCache = {};
 
 async function erGetMonthEntities(mk){
@@ -1891,16 +1938,20 @@ function erSetTrendEntity(name){
   document.getElementById('er-trend-dd').classList.remove('open');
   renderERTrend();
 }
-function erToggleTrendGroup(){
-  erTrendGroup = erTrendGroup==='현장' ? '사무' : '현장';
+function erToggleTrendGroup(g){
+  const other = g==='현장' ? '사무' : '현장';
+  if(erTrendGroups[g] && !erTrendGroups[other]) return; // 최소 1개는 선택 유지
+  erTrendGroups[g] = !erTrendGroups[g];
   renderERTrend();
 }
 
 async function renderERTrend(){
   const el = document.getElementById('er-trend');
   if(!el) return;
-  const sw = document.getElementById('er-trend-switch');
-  if(sw){ sw.classList.toggle('b', erTrendGroup==='사무'); sw.setAttribute('aria-checked', erTrendGroup==='사무'); }
+  ER_GROUP_KEYS.forEach(g=>{
+    const b = document.getElementById('er-trend-g-'+g);
+    if(b){ b.classList.toggle('active', !!erTrendGroups[g]); b.setAttribute('aria-pressed', !!erTrendGroups[g]); }
+  });
   const lbl = document.getElementById('er-trend-dd-label');
   if(lbl) lbl.textContent = erTrendEntity;
   erRenderTrendMenu();
@@ -1910,7 +1961,8 @@ async function renderERTrend(){
   for(const mk of months){
     const ents = await erGetMonthEntities(mk);
     const scope = erTrendEntity==='전체' ? ents : ents.filter(x=>x.name===erTrendEntity);
-    const v = scope.reduce((s,e)=>s+ER_TYPE_KEYS.reduce((x,t)=>x+erHeadcount(e.groups[t][erTrendGroup]),0),0);
+    const activeGroups = ER_GROUP_KEYS.filter(g=>erTrendGroups[g]);
+    const v = scope.reduce((s,e)=>s+ER_TYPE_KEYS.reduce((x,t)=>x+activeGroups.reduce((y,g)=>y+erHeadcount(e.groups[t][g]),0),0),0);
     pts.push({mk, v});
   }
   if(pts.length===0){ el.innerHTML = `<div class="er-empty">추이 데이터가 없습니다.</div>`; return; }
@@ -1943,6 +1995,227 @@ async function renderERTrend(){
   </svg>`;
 }
 
+
+/* ================= 월별 인원 DB 엑셀 업로드 (브라우저 내 처리) ================= */
+/* xlsx = ZIP(XML). 외부 라이브러리 없이 브라우저 내장 DecompressionStream으로 해제해 파싱한다. */
+function erZipEntries(u8){
+  let i = u8.length - 22;
+  while(i >= 0 && !(u8[i]===0x50 && u8[i+1]===0x4b && u8[i+2]===0x05 && u8[i+3]===0x06)) i--;
+  if(i < 0) throw new Error('올바른 xlsx(zip) 파일이 아닙니다.');
+  const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+  const count = dv.getUint16(i+10, true);
+  let off = dv.getUint32(i+16, true);
+  const dec = new TextDecoder();
+  const entries = {};
+  for(let k=0; k<count; k++){
+    if(dv.getUint32(off, true) !== 0x02014b50) break;
+    const method = dv.getUint16(off+10, true);
+    const csize  = dv.getUint32(off+20, true);
+    const nlen   = dv.getUint16(off+28, true);
+    const elen   = dv.getUint16(off+30, true);
+    const clen   = dv.getUint16(off+32, true);
+    const lho    = dv.getUint32(off+42, true);
+    const name = dec.decode(u8.subarray(off+46, off+46+nlen));
+    entries[name] = {method, csize, lho};
+    off += 46 + nlen + elen + clen;
+  }
+  return entries;
+}
+async function erUnzipEntry(u8, ent){
+  const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+  const nlen = dv.getUint16(ent.lho+26, true), elen = dv.getUint16(ent.lho+28, true);
+  const start = ent.lho + 30 + nlen + elen;
+  const comp = u8.subarray(start, start + ent.csize);
+  if(ent.method === 0) return comp;
+  if(typeof DecompressionStream === 'undefined') throw new Error('이 브라우저는 압축 해제를 지원하지 않습니다. 최신 브라우저를 사용해주세요.');
+  const stream = new Blob([comp]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+function erColIndex(ref){
+  let n = 0;
+  for(const ch of String(ref)){
+    const c = ch.charCodeAt(0);
+    if(c >= 65 && c <= 90) n = n*26 + (c-64); else break;
+  }
+  return n - 1;
+}
+function erParseSheetXml(xml, shared){
+  if(!xml) return [];
+  const doc = new DOMParser().parseFromString(xml, 'application/xml');
+  const rows = [];
+  doc.querySelectorAll('sheetData > row').forEach(rowEl=>{
+    const cells = [];
+    rowEl.querySelectorAll('c').forEach(c=>{
+      const idx = erColIndex(c.getAttribute('r') || '');
+      if(idx < 0) return;
+      const t = c.getAttribute('t');
+      let val = null;
+      if(t === 'inlineStr'){ val = c.textContent; }
+      else {
+        const v = c.querySelector('v');
+        if(v) val = t==='s' ? shared[+v.textContent] : (t==='str' || t==='b' ? v.textContent : parseFloat(v.textContent));
+      }
+      cells[idx] = val;
+    });
+    rows.push(cells);
+  });
+  return rows;
+}
+async function erReadXlsx(file){
+  const u8 = new Uint8Array(await file.arrayBuffer());
+  const entries = erZipEntries(u8);
+  const dec = new TextDecoder();
+  const text = async name => entries[name] ? dec.decode(await erUnzipEntry(u8, entries[name])) : null;
+
+  const shared = [];
+  const ss = await text('xl/sharedStrings.xml');
+  if(ss){
+    new DOMParser().parseFromString(ss, 'application/xml').querySelectorAll('si')
+      .forEach(si=>shared.push([...si.querySelectorAll('t')].map(t=>t.textContent).join('')));
+  }
+  const relMap = {};
+  const rels = await text('xl/_rels/workbook.xml.rels');
+  if(rels){
+    new DOMParser().parseFromString(rels, 'application/xml').querySelectorAll('Relationship')
+      .forEach(r=>relMap[r.getAttribute('Id')] = r.getAttribute('Target'));
+  }
+  const sheets = [];
+  const wb = await text('xl/workbook.xml');
+  if(wb){
+    new DOMParser().parseFromString(wb, 'application/xml').querySelectorAll('sheet').forEach(s=>{
+      const rid = s.getAttribute('r:id') || s.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','id');
+      let tgt = (relMap[rid] || '').replace(/^\//,'');
+      if(tgt && tgt.indexOf('xl/') !== 0) tgt = 'xl/' + tgt;
+      sheets.push({name: s.getAttribute('name'), path: tgt});
+    });
+  }
+  return {sheets, getRows: async path => erParseSheetXml(await text(path), shared)};
+}
+
+const ER_UPLOAD_REQUIRED = ['기준일자','법인 최종','ISE/FSE','사무/현장'];
+function erRowsToObjects(rows){
+  let header = null, hIdx = -1;
+  for(let i=0; i<Math.min(rows.length, 15); i++){
+    const vals = (rows[i]||[]).map(v=>typeof v==='string' ? v.trim() : v);
+    if(ER_UPLOAD_REQUIRED.every(h=>vals.includes(h))){ header = vals; hIdx = i; break; }
+  }
+  if(hIdx < 0) return null;
+  const out = [];
+  for(let i=hIdx+1; i<rows.length; i++){
+    const r = rows[i];
+    if(!r || r.every(v=>v==null || v==='')) continue;
+    const o = {};
+    header.forEach((h, ci)=>{ if(h) o[h] = r[ci]; });
+    out.push(o);
+  }
+  return out;
+}
+function erParseYearsKR(s){
+  if(s==null || s==='') return null;
+  const m = /^(\d+)년\s*(\d+)개월$/.exec(String(s).trim());
+  if(m) return (+m[1]) + (+m[2])/12;
+  const n = parseFloat(s);
+  return isNaN(n) ? null : n;
+}
+function erMonthFromCell(v){
+  if(v==null || v==='') return null;
+  if(typeof v==='number' && isFinite(v)){
+    const d = new Date(Math.round((v - 25569) * 86400000));
+    return isNaN(d) ? null : d.toISOString().slice(0,7);
+  }
+  const m = /(\d{4})[-./년\s]*(\d{1,2})/.exec(String(v));
+  return m ? m[1] + '-' + String(+m[2]).padStart(2,'0') : null;
+}
+function erAggregateUploadRows(rows){
+  const TYPE = {'FSE':'주재원', 'ISE':'현채인'};
+  const acc = {};
+  ER_ENTITY_ORDER.forEach(n=>{
+    acc[n] = {};
+    ER_TYPE_KEYS.forEach(t=>{
+      acc[n][t] = {};
+      ER_GROUP_KEYS.forEach(g=>{ acc[n][t][g] = {male:0,female:0,undef:0,tsum:0,tn:0,asum:0,an:0,sup:0}; });
+    });
+  });
+  let used=0, excluded=0, unknownEntity=0;
+  const dates = {};
+  for(const r of rows){
+    const ex = r['집계제외'];
+    if(ex!=null && String(ex).trim()!==''){ excluded++; continue; }
+    const name = String(r['법인 최종']||'').trim();
+    if(!acc[name]){ if(name) unknownEntity++; continue; }
+    const t = TYPE[String(r['ISE/FSE']||'').trim()];
+    const g = String(r['사무/현장']||'').trim();
+    if(!t || !acc[name][t][g]) continue;
+    const leaf = acc[name][t][g];
+    const sex = String(r['성별']||'').trim();
+    if(sex==='남성') leaf.male++; else if(sex==='여성') leaf.female++; else leaf.undef++;
+    const tv = erParseYearsKR(r['근속년수']); if(tv!=null){ leaf.tsum+=tv; leaf.tn++; }
+    const av = erParseYearsKR(r['나이']);   if(av!=null){ leaf.asum+=av; leaf.an++; }
+    const title = (String(r['직위명']||'') + '|' + String(r['직책명']||'')).replace(/\u00a0/g,' ');
+    if(/supervisor/i.test(title)) leaf.sup++;
+    const mk = erMonthFromCell(r['기준일자']); if(mk) dates[mk] = (dates[mk]||0)+1;
+    used++;
+  }
+  const monthKey = Object.keys(dates).sort((a,b)=>dates[b]-dates[a])[0] || null;
+  const entities = ER_ENTITY_ORDER.map(n=>({
+    id: 'er-' + n.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
+    name: n,
+    groups: Object.fromEntries(ER_TYPE_KEYS.map(t=>[t, Object.fromEntries(ER_GROUP_KEYS.map(g=>{
+      const l = acc[n][t][g];
+      return [g, {
+        male:l.male, female:l.female, undef:l.undef,
+        tenure: l.tn ? +(l.tsum/l.tn).toFixed(2) : 0,
+        age:    l.an ? +(l.asum/l.an).toFixed(2) : 0,
+        sup: l.sup
+      }];
+    }))]))
+  }));
+  return {monthKey, entities, used, excluded, unknownEntity};
+}
+
+async function erHandleUpload(file){
+  if(!file) return;
+  const st = document.getElementById('er-upload-status');
+  const setSt = (msg, cls) => { st.className = 'er-upload-status ' + (cls||''); st.innerHTML = msg; };
+  try{
+    if(!/\.xlsx$/i.test(file.name)){ setSt('.xlsx 형식의 엑셀 파일만 업로드할 수 있습니다.', 'err'); return; }
+    setSt('파일을 읽는 중입니다…');
+    const wb = await erReadXlsx(file);
+    let objs = null, sheetName = '';
+    for(const s of wb.sheets){
+      const o = erRowsToObjects(await wb.getRows(s.path));
+      if(o){ objs = o; sheetName = s.name; break; }
+    }
+    if(!objs){ setSt('필요한 컬럼(기준일자 · 법인 최종 · ISE/FSE · 사무/현장)을 가진 시트를 찾지 못했습니다.', 'err'); return; }
+    const agg = erAggregateUploadRows(objs);
+    if(agg.used === 0){ setSt('집계할 인원 데이터가 없습니다. 파일 내용을 확인해주세요.', 'err'); return; }
+    if(!agg.monthKey){ setSt('기준일자 컬럼에서 기준월을 인식하지 못했습니다.', 'err'); return; }
+    const exists = erMonths.includes(agg.monthKey);
+    if(exists && !confirm(agg.monthKey.replace('-','.') + ' 데이터가 이미 있습니다. 이 파일로 덮어쓸까요?')){
+      setSt('업로드를 취소했습니다.'); return;
+    }
+    if(!exists){
+      erMonths.push(agg.monthKey);
+      erMonths.sort();
+      try{ await window.storage.set('er:headcount:months', JSON.stringify(erMonths), true); }catch(e){}
+    }
+    try{ await window.storage.set('er:headcount:'+agg.monthKey, JSON.stringify({entities: agg.entities}), true); }catch(e){}
+    erMonthCache[agg.monthKey] = agg.entities;
+    await erSelectMonth(agg.monthKey);
+    const total = agg.entities.reduce((s,e)=>s+erHeadcount(erAggregateEntity(e)), 0);
+    setSt(`✓ <b>${agg.monthKey.replace('-','.')}</b> 기준 <b>${total.toLocaleString()}명</b> 반영 완료 — 시트 "${sheetName}" · ${agg.used.toLocaleString()}행 집계 · 집계제외 ${agg.excluded.toLocaleString()}명 제외${agg.unknownEntity ? ` · 대상 외 법인 ${agg.unknownEntity.toLocaleString()}명 제외` : ''}`, 'ok');
+  }catch(err){
+    console.error(err);
+    setSt('업로드 처리 중 오류가 발생했습니다: ' + err.message, 'err');
+  }
+}
+(function erInitUpload(){
+  const z = document.getElementById('er-upload-zone');
+  if(!z) return;
+  ['dragenter','dragover'].forEach(ev=>z.addEventListener(ev, e=>{ e.preventDefault(); z.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(ev=>z.addEventListener(ev, e=>{ e.preventDefault(); z.classList.remove('drag'); }));
+  z.addEventListener('drop', e=>{ const f = e.dataTransfer.files && e.dataTransfer.files[0]; if(f) erHandleUpload(f); });
+})();
 
 (async function initERtracker(){
   await erInitMonths();
