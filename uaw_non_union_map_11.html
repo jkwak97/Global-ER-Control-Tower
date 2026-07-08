@@ -393,14 +393,16 @@
   .er-stat .val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--navy);margin-top:3px;font-variant-numeric:tabular-nums;}
   .er-stat .val small{font-size:11px;font-weight:400;color:var(--text-dim);margin-left:1px;}
 
-  /* 월별 DB 업로드 */
-  .er-upload{padding:20px 18px;}
-  .er-upload-zone{border:1.5px dashed var(--line);border-radius:8px;padding:26px 18px;text-align:center;transition:border-color .15s,background .15s;}
-  .er-upload-zone.drag{border-color:var(--teal);background:color-mix(in srgb,var(--teal) 7%,transparent);}
-  .er-upload-zone p{margin:0 0 6px;font-size:13.5px;color:var(--text-dim);}
-  .er-upload-zone .hint{font-size:11.5px;color:var(--text-faint);line-height:1.65;margin-top:8px;}
-  .er-link-btn{background:none;border:none;color:var(--teal);font-weight:700;cursor:pointer;font-size:13.5px;text-decoration:underline;text-underline-offset:2px;padding:0;font-family:var(--sans);}
-  .er-upload-status{margin-top:12px;font-size:12px;font-family:var(--mono);color:var(--text-dim);min-height:16px;line-height:1.6;}
+  /* 월별 DB 업로드 (관리자용 미니 아이콘) */
+  .er-upload-corner{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:16px;}
+  .er-upload-btn{
+    width:32px;height:32px;border-radius:8px;border:1px solid var(--line);
+    background:var(--card);color:var(--text-faint);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:color .15s,border-color .15s;
+  }
+  .er-upload-btn:hover{color:var(--teal);border-color:var(--teal);}
+  .er-upload-status{font-size:11.5px;font-family:var(--mono);color:var(--text-dim);text-align:right;line-height:1.5;}
   .er-upload-status.ok{color:var(--s-rejected);}
   .er-upload-status.err{color:var(--s-unionized);}
 
@@ -593,18 +595,14 @@
       <div id="er-entity-detail"></div>
     </div>
 
-    <div class="er-panel">
-      <div class="er-toolbar">
-        <span style="font-family:var(--mono);font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;">월별 인원 DB 업로드</span>
-      </div>
-      <div class="er-upload">
-        <div class="er-upload-zone" id="er-upload-zone">
-          <input type="file" id="er-upload-input" accept=".xlsx" style="display:none;" onchange="erHandleUpload(this.files[0]); this.value='';">
-          <p>해외 인원 DB 엑셀 파일(.xlsx)을 여기로 끌어다 놓거나 <button type="button" class="er-link-btn" onclick="document.getElementById('er-upload-input').click()">파일 선택</button></p>
-          <p class="hint">기준일자 컬럼으로 기준월을 자동 인식해 반영합니다. 이전 월 데이터는 삭제되지 않고 누적 보관되어 상단 기준월 선택과 인원 추이 그래프에서 계속 확인할 수 있습니다.<br>파일은 브라우저 안에서만 처리되며 외부로 전송되지 않습니다.</p>
-          <div class="er-upload-status" id="er-upload-status"></div>
-        </div>
-      </div>
+    <div class="er-upload-corner">
+      <span class="er-upload-status" id="er-upload-status"></span>
+      <input type="file" id="er-upload-input" accept=".xlsx" style="display:none;" onchange="erHandleUpload(this.files[0]); this.value='';">
+      <button type="button" class="er-upload-btn" onclick="document.getElementById('er-upload-input').click()" aria-label="인원 DB 업로드" title="인원 DB 업로드 (.xlsx)">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 15V4"/><path d="M7 8.5 12 3.5l5 5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -1488,7 +1486,7 @@ if(!window.storage){
 
 const ER_TYPE_KEYS = ['주재원','현채인'];
 /* 단독법인 (그 외는 J/V — 차트 배색 구분용) */
-const ER_STANDALONE = ['ESAZ','ESMI(Holland)','ESMI(Lansing)'];
+const ER_STANDALONE = ['ESAZ','ESMI(Holland)','ESMI(Lansing)','ESOT'];
 function erIsJV(name){ return !ER_STANDALONE.includes(name); }
 const ER_GROUP_KEYS = ['사무','현장'];
 let erEntities = [];
@@ -2128,6 +2126,10 @@ function erMonthFromCell(v){
 }
 function erAggregateUploadRows(rows){
   const TYPE = {'FSE':'주재원', 'ISE':'현채인'};
+  /* 법인명은 띄어쓰기 무시하고 매칭 — 예: "ESMI (Holland)" == "ESMI(Holland)" */
+  const erNormName = s => String(s||'').replace(/\s+/g,'');
+  const nameMap = {};
+  ER_ENTITY_ORDER.forEach(n=>nameMap[erNormName(n)] = n);
   const acc = {};
   ER_ENTITY_ORDER.forEach(n=>{
     acc[n] = {};
@@ -2141,8 +2143,9 @@ function erAggregateUploadRows(rows){
   for(const r of rows){
     const ex = r['집계제외'];
     if(ex!=null && String(ex).trim()!==''){ excluded++; continue; }
-    const name = String(r['법인 최종']||'').trim();
-    if(!acc[name]){ if(name) unknownEntity++; continue; }
+    const raw = String(r['법인 최종']||'').trim();
+    const name = nameMap[erNormName(raw)];
+    if(!name){ if(raw) unknownEntity++; continue; }
     const t = TYPE[String(r['ISE/FSE']||'').trim()];
     const g = String(r['사무/현장']||'').trim();
     if(!t || !acc[name][t][g]) continue;
@@ -2209,14 +2212,6 @@ async function erHandleUpload(file){
     setSt('업로드 처리 중 오류가 발생했습니다: ' + err.message, 'err');
   }
 }
-(function erInitUpload(){
-  const z = document.getElementById('er-upload-zone');
-  if(!z) return;
-  ['dragenter','dragover'].forEach(ev=>z.addEventListener(ev, e=>{ e.preventDefault(); z.classList.add('drag'); }));
-  ['dragleave','drop'].forEach(ev=>z.addEventListener(ev, e=>{ e.preventDefault(); z.classList.remove('drag'); }));
-  z.addEventListener('drop', e=>{ const f = e.dataTransfer.files && e.dataTransfer.files[0]; if(f) erHandleUpload(f); });
-})();
-
 (async function initERtracker(){
   await erInitMonths();
   await loadERentities();
