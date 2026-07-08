@@ -341,6 +341,25 @@
   .er-dt-bar.a{background:var(--primary);}
   .er-dt-bar.b{background:var(--teal);}
   .er-dt-val{width:74px;flex-shrink:0;font-family:var(--mono);font-size:12px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;}
+  .er-dt-stats-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;}
+  .er-dt-stats-head .ttl{font-family:var(--mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;}
+  .er-switch{
+    position:relative;display:inline-flex;width:116px;height:28px;flex-shrink:0;
+    border:1px solid var(--line);border-radius:999px;background:var(--surface);
+    cursor:pointer;padding:2px;font-family:var(--sans);
+  }
+  .er-switch-knob{
+    position:absolute;top:2px;left:2px;width:calc(50% - 2px);height:calc(100% - 4px);
+    border-radius:999px;background:var(--primary);
+    transition:transform .3s cubic-bezier(.2,.8,.3,1);
+  }
+  .er-switch.b .er-switch-knob{transform:translateX(100%);}
+  .er-switch-lbl{
+    position:relative;z-index:1;flex:1;display:flex;align-items:center;justify-content:center;
+    font-size:11.5px;font-weight:700;color:var(--text-dim);transition:color .3s;
+  }
+  .er-switch:not(.b) .er-switch-lbl:first-of-type{color:#fff;}
+  .er-switch.b .er-switch-lbl:last-of-type{color:#fff;}
   .er-dt-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
   .er-stat{background:var(--surface);border-radius:8px;padding:10px 12px;}
   .er-stat .lbl{font-family:var(--mono);font-size:9.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.05em;line-height:1.5;}
@@ -489,7 +508,7 @@
         <div style="flex:1;"></div>
         <button type="button" class="er-btn ghost" id="er-chart-filter-fse" onclick="erSetChartFilter('주재원')">주재원</button>
         <button type="button" class="er-btn ghost" id="er-chart-filter-ise" onclick="erSetChartFilter('현채인')">현채인</button>
-        <button type="button" class="er-btn ghost" id="er-chart-filter-total" onclick="erSetChartFilter('합계')">합계</button>
+        <button type="button" class="er-btn ghost" id="er-chart-filter-total" onclick="erSetChartFilter('전체')">전체</button>
       </div>
       <div id="er-chart" style="padding:18px 20px;"></div>
     </div>
@@ -1419,7 +1438,9 @@ async function loadERentities(){
     const r = await window.storage.get('er:headcount:'+erSelectedMonth, true);
     if(r){
       erEntities = JSON.parse(r.value).entities || [];
-      if(erUpgradeStoredEntities()) await saveERentities();
+      const upgraded = erUpgradeStoredEntities();
+      const reordered = erApplyEntityOrder();
+      if(upgraded || reordered) await saveERentities();
       return;
     }
   }catch(e){ /* 저장소 접근 실패 - 아래 폴백으로 진행 */ }
@@ -1460,15 +1481,24 @@ function erSeedMay2026(){
     }
   });
   return [
+    mk('ESMI(Holland)', L(85,1,0,0,40.5,0),  L(36,0,0,0,38.51,0),  L(349,138,3,3.21,34.57,51), L(882,374,16,2.46,36.76,1)),
+    mk('ESMI(Lansing)', L(45,2,0,0,39.85,0), L(20,0,0,0,38.12,0),  L(184,44,0,0.77,35.23,26),  L(325,126,5,0.47,37.04,0)),
     mk('ESAZ',          L(62,0,0,0,41.9,0),  L(6,0,0,0,42.28,0),   L(78,18,0,0.88,30.59,10),   L(35,7,0,0.19,37.41,0)),
     mk('ESGM(OH)',      L(27,1,0,0,45.6,0),  L(2,0,0,0,44.29,0),   L(324,96,1,3.05,38.59,94),  L(0,0,0,0,0,0)),
     mk('ESGM(TN)',      L(42,0,0,0,40.54,0), L(6,0,0,0,40.12,0),   L(224,60,2,2.47,38.62,58),  L(0,0,0,0,0,0)),
     mk('ESHD',          L(66,4,0,0,39.48,1), L(9,0,0,0,37.95,0),   L(272,62,1,1.43,35.26,46),  L(413,176,0,0.48,38.8,48)),
     mk('ESHG',          L(43,1,0,0,41.57,0), L(4,0,0,0,38.35,0),   L(132,35,0,0.87,34.13,14),  L(198,136,0,0.49,36.91,0)),
-    mk('ESMI(Holland)', L(85,1,0,0,40.5,0),  L(36,0,0,0,38.51,0),  L(349,138,3,3.21,34.57,51), L(882,374,16,2.46,36.76,1)),
-    mk('ESMI(Lansing)', L(45,2,0,0,39.85,0), L(20,0,0,0,38.12,0),  L(184,44,0,0.77,35.23,26),  L(325,126,5,0.47,37.04,0)),
     mk('ESOT',          L(64,3,0,0,40.78,0), L(5,0,0,0,40.28,0),   L(307,10,53,1.62,46.34,85), L(674,0,125,0.93,46.33,0))
   ];
+}
+
+/* 법인 표시 순서 (목록에 없는 법인은 뒤에 추가된 순서 유지) */
+const ER_ENTITY_ORDER = ['ESMI(Holland)','ESMI(Lansing)','ESAZ','ESGM(OH)','ESGM(TN)','ESHD','ESHG','ESOT'];
+function erApplyEntityOrder(){
+  const pos = n => { const i = ER_ENTITY_ORDER.indexOf(n); return i===-1 ? ER_ENTITY_ORDER.length : i; };
+  const before = erEntities.map(e=>e.id).join('|');
+  erEntities.sort((a,b)=>pos(a.name)-pos(b.name));
+  return erEntities.map(e=>e.id).join('|') !== before;
 }
 
 /* 이전 버전(성별·나이·Supervisor 없는 형식)으로 저장된 데이터를 시드 값으로 업그레이드 */
@@ -1565,8 +1595,8 @@ function erComputeSummary(){
   return {totalAll, totalISE, totalFSE, totalField, totalFieldFSE, totalFieldISE};
 }
 
-/* 법인별 비교 차트 (가로 스택 막대, 사무/현장 고정 · 주재원/현채인/합계 필터) */
-let erChartFilter = '합계'; // '주재원' | '현채인' | '합계'
+/* 법인별 비교 차트 (가로 스택 막대, 사무/현장 고정 · 주재원/현채인/전체 필터) */
+let erChartFilter = '전체'; // '주재원' | '현채인' | '전체'
 
 function erAggregateGroup(e, groupKey){ return erCombine(ER_TYPE_KEYS.map(t=>e.groups[t][groupKey])); }
 
@@ -1581,14 +1611,14 @@ function renderERChart(){
 
   document.getElementById('er-chart-filter-fse').classList.toggle('active', erChartFilter==='주재원');
   document.getElementById('er-chart-filter-ise').classList.toggle('active', erChartFilter==='현채인');
-  document.getElementById('er-chart-filter-total').classList.toggle('active', erChartFilter==='합계');
+  document.getElementById('er-chart-filter-total').classList.toggle('active', erChartFilter==='전체');
 
   if(erEntities.length===0){
     el.innerHTML = `<div class="er-empty">비교할 법인 데이터가 없습니다.</div>`;
     return;
   }
 
-  const groupHeadcount = (e, groupKey) => erChartFilter==='합계'
+  const groupHeadcount = (e, groupKey) => erChartFilter==='전체'
     ? erHeadcount(erAggregateGroup(e, groupKey))
     : erHeadcount(e.groups[erChartFilter][groupKey]);
 
@@ -1596,7 +1626,7 @@ function renderERChart(){
     const aVal = groupHeadcount(e, '사무');
     const bVal = groupHeadcount(e, '현장');
     return {name:e.name, total: aVal+bVal, aVal, bVal};
-  }).sort((x,y)=>y.total-x.total);
+  });
 
   const maxTotal = Math.max(...rows.map(r=>r.total), 1);
 
@@ -1625,8 +1655,9 @@ function renderERChart(){
 
 /* 법인별 상세 (애니메이션 드롭다운) */
 const erDetailOpen = new Set();
-const erDetailFilter = {}; // entityId -> '주재원' | '현채인' | '합계'
-const ER_DETAIL_FILTERS = ['주재원','현채인','합계'];
+const erDetailFilter = {}; // entityId -> '주재원' | '현채인' | '전체'
+const erDetailGroup = {};  // entityId -> '현장' | '사무' (평균 지표 스위치)
+const ER_DETAIL_FILTERS = ['주재원','현채인','전체'];
 
 function erEntitySup(e){
   return ER_TYPE_KEYS.reduce((s,t)=>s+ER_GROUP_KEYS.reduce((x,g)=>x+(e.groups[t][g].sup||0),0),0);
@@ -1642,9 +1673,8 @@ function renderERDetail(){
   el.innerHTML = erEntities.map(e=>{
     const open = erDetailOpen.has(e.id);
     const total = erHeadcount(erAggregateEntity(e));
-    const f = erDetailFilter[e.id] || '합계';
-    const iseField = e.groups['현채인']['현장'];
-    const hasIseField = erHeadcount(iseField) > 0;
+    const f = erDetailFilter[e.id] || '전체';
+    const g = erDetailGroup[e.id] || '현장';
     const sup = erEntitySup(e);
     return `
     <div class="er-detail-item ${open?'open':''}" id="er-dt-${e.id}">
@@ -1661,23 +1691,54 @@ function renderERDetail(){
           <div class="er-dt-row"><span class="glbl">사무</span><div class="er-dt-track"><div class="er-dt-bar a" id="er-dtbar-a-${e.id}"></div></div><span class="er-dt-val" id="er-dtval-a-${e.id}"></span></div>
           <div class="er-dt-row"><span class="glbl">현장</span><div class="er-dt-track"><div class="er-dt-bar b" id="er-dtbar-b-${e.id}"></div></div><span class="er-dt-val" id="er-dtval-b-${e.id}"></span></div>
         </div>
-        <div class="er-dt-stats">
-          <div class="er-stat"><div class="lbl">현장직 평균 근속 · 현채인</div><div class="val">${hasIseField && iseField.tenure ? iseField.tenure.toFixed(1)+'<small>년</small>' : '–'}</div></div>
-          <div class="er-stat"><div class="lbl">현장직 평균 나이 · 현채인</div><div class="val">${hasIseField && iseField.age ? iseField.age.toFixed(1)+'<small>세</small>' : '–'}</div></div>
-          <div class="er-stat"><div class="lbl">Supervisor (Sr. 포함)</div><div class="val">${sup.toLocaleString()}<small>명</small></div></div>
+        <div>
+          <div class="er-dt-stats-head">
+            <span class="ttl">평균 지표 · 현채인 기준</span>
+            <button type="button" class="er-switch ${g==='사무'?'b':''}" id="er-dtsw-${e.id}" onclick="erToggleDetailGroup('${e.id}')" role="switch" aria-checked="${g==='사무'}" aria-label="현장/사무 전환">
+              <span class="er-switch-knob"></span>
+              <span class="er-switch-lbl">현장</span>
+              <span class="er-switch-lbl">사무</span>
+            </button>
+          </div>
+          <div class="er-dt-stats">
+            <div class="er-stat"><div class="lbl" id="er-dtstat-tl-${e.id}"></div><div class="val" id="er-dtstat-t-${e.id}"></div></div>
+            <div class="er-stat"><div class="lbl" id="er-dtstat-al-${e.id}"></div><div class="val" id="er-dtstat-a-${e.id}"></div></div>
+            <div class="er-stat"><div class="lbl">Supervisor (Sr. 포함)</div><div class="val">${sup.toLocaleString()}<small>명</small></div></div>
+          </div>
         </div>
       </div></div></div>
     </div>`;
   }).join('');
-  erEntities.forEach(e=>erUpdateDetailBars(e.id));
+  erEntities.forEach(e=>{ erUpdateDetailBars(e.id); erUpdateDetailStats(e.id); });
+}
+
+function erUpdateDetailStats(id){
+  const e = erEntities.find(x=>x.id===id);
+  const tEl = document.getElementById('er-dtstat-t-'+id);
+  if(!e || !tEl) return;
+  const g = erDetailGroup[id] || '현장';
+  const leaf = e.groups['현채인'][g];
+  const has = erHeadcount(leaf) > 0;
+  document.getElementById('er-dtstat-tl-'+id).textContent = g+'직 평균 근속';
+  document.getElementById('er-dtstat-al-'+id).textContent = g+'직 평균 나이';
+  tEl.innerHTML = has && leaf.tenure ? leaf.tenure.toFixed(1)+'<small>년</small>' : '–';
+  document.getElementById('er-dtstat-a-'+id).innerHTML = has && leaf.age ? leaf.age.toFixed(1)+'<small>세</small>' : '–';
+}
+
+function erToggleDetailGroup(id){
+  const g = (erDetailGroup[id] || '현장') === '현장' ? '사무' : '현장';
+  erDetailGroup[id] = g;
+  const sw = document.getElementById('er-dtsw-'+id);
+  if(sw){ sw.classList.toggle('b', g==='사무'); sw.setAttribute('aria-checked', g==='사무'); }
+  erUpdateDetailStats(id);
 }
 
 function erUpdateDetailBars(id){
   const e = erEntities.find(x=>x.id===id);
   const barA = document.getElementById('er-dtbar-a-'+id);
   if(!e || !barA) return;
-  const f = erDetailFilter[id] || '합계';
-  const cnt = g => f==='합계' ? erHeadcount(erAggregateGroup(e,g)) : erHeadcount(e.groups[f][g]);
+  const f = erDetailFilter[id] || '전체';
+  const cnt = g => f==='전체' ? erHeadcount(erAggregateGroup(e,g)) : erHeadcount(e.groups[f][g]);
   const a = cnt('사무'), b = cnt('현장');
   const max = Math.max(a, b, 1);
   barA.style.width = (a/max*100)+'%';
