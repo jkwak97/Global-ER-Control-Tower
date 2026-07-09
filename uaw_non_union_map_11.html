@@ -461,6 +461,7 @@
   .wh-tick,.wh-x{font-family:var(--mono);font-size:9.5px;fill:var(--text-faint);}
   .wh-val{font-family:var(--mono);font-size:9.5px;font-weight:700;fill:var(--ink);}
   .wh-none{font-family:var(--mono);font-size:9.5px;fill:var(--text-faint);}
+  .wage-sub-h{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);margin:0 0 8px;}
   .wage-inc-now{display:inline-block;margin:6px 0 12px;padding:8px 12px;border-radius:7px;background:var(--flash);font-family:var(--mono);font-size:12px;color:var(--text-dim);}
   .wage-inc-now b{color:var(--ink);}
   .wage-inc-table tr.cur td{background:var(--flash);}
@@ -719,8 +720,8 @@
       <div class="wage-hist-grid" id="er-wage-history"></div>
 
       <div class="graph-card" style="margin-top:22px;">
-        <h4>ESGM · UAW 협약 임금 상세</h4>
-        <div class="sub">Production / Quality / SRP / Material Handling 기본급 · CBA 확정 스케줄</div>
+        <h4>ESGM · 임금 인상 상세</h4>
+        <div class="sub">사무(Office) 연도별 인상률 + 현장(Prod.)은 UAW 협약(CBA) 확정 스케줄 — 한 화면 통합</div>
         <div id="er-wage-increase"></div>
       </div>
     </div>
@@ -2489,8 +2490,6 @@ const ER_WAGE_HISTORY = [
    years:{'23':{office:9.3, prod:4.7}, '24':{office:5.3, prod:10.8}, '25':{office:4.6, prod:3.9}, '26':{office:10.3, prod:9.6}}},
   {name:'ESHD', years:{'25':{office:5.1, prod:4}, '26':{office:3.5, prod:4}}},
   {name:'ESAZ', years:{'25':{office:3.3}, '26':{office:4, prod:3.5}}},
-  {name:'ESGM', note:'현장(Prod.) 인상은 UAW 협약(CBA)으로 결정 · 아래 상세 참조',
-   years:{'25':{office:5.5}, '26':{office:6}}},
   {name:'ESOT', note:"'26년 임단협 진행중",
    years:{'25':{office:4, prod:4}, '26':{office:2.5}}},
   {name:'ESHG', years:{'25':{office:4}, '26':{office:5.2, prod:2.2}}}
@@ -2542,6 +2541,7 @@ function erRenderWageHistory(){
 const ER_WAGE_INCREASES = {
   'ESGM': {
     note: 'UAW 협약',
+    office: {'25':5.5, '26':6},
     steps: [
       {date:'2023-11-20', gwi:null, start:26.91, after52:30.50},
       {date:'2024-09-16', gwi:3,    start:27.72, after52:31.42},
@@ -2656,9 +2656,34 @@ function erRenderWageIncrease(){
       <td>$${s.after52.toFixed(2)}</td>
     </tr>`).join('');
 
+  /* 사무(Office) 연도별 인상률 미니 차트 — History 그리드와 동일한 0~12% 공통 스케일 */
+  const officeSvg = (()=>{
+    const data = d.office || {};
+    const yrs = Object.keys(data).sort();
+    if(yrs.length===0) return '';
+    const OW=280, OH=128, opL=28, opR=8, opT=16, opB=18, YMAX=12;
+    const ogw = (OW-opL-opR)/yrs.length;
+    const oy = v => opT + (OH-opT-opB)*(1 - v/YMAX);
+    let g='';
+    for(let t=0;t<=YMAX;t+=4){
+      g += `<line x1="${opL}" y1="${oy(t)}" x2="${OW-opR}" y2="${oy(t)}" stroke="var(--line)" stroke-width="1" opacity="${t===0?1:.55}" ${t>0?'stroke-dasharray="3 4"':''}/>
+        <text x="${opL-6}" y="${oy(t)+3.5}" text-anchor="end" class="wh-tick">${t}%</text>`;
+    }
+    const bw=22;
+    yrs.forEach((yr,i)=>{
+      const cx = opL + i*ogw + ogw/2;
+      const v = data[yr], by = oy(v);
+      g += `<rect x="${cx-bw/2}" y="${by}" width="${bw}" height="${Math.max(oy(0)-by,1.5)}" rx="3" fill="var(--primary)"><title>'${yr} 사무 +${v}%</title></rect>
+        <text x="${cx}" y="${by-4}" text-anchor="middle" class="wh-val">${v%1?v.toFixed(1):v}</text>
+        <text x="${cx}" y="${OH-5}" text-anchor="middle" class="wh-x">'${yr}</text>`;
+    });
+    return `<svg viewBox="0 0 ${OW} ${OH}" class="wage-plot" role="img" aria-label="ESGM 사무 연도별 인상률">${g}</svg>`;
+  })();
+
   host.innerHTML = nowLine + `
     <div class="wage-inc-grid">
       <div>
+        <div class="wage-sub-h">현장 (Production) · UAW 협약 스케줄</div>
         <div class="wage-inc-legend">
           <span><span class="sw b"></span>초임 (Starting Wage Rate)</span>
           <span><span class="sw a"></span>52주 후 (After 52 Weeks)</span>
@@ -2666,6 +2691,9 @@ function erRenderWageIncrease(){
         ${svg}
       </div>
       <div>
+        <div class="wage-sub-h">사무 (Office) · 연도별 인상률</div>
+        ${officeSvg}
+        <div class="wage-sub-h" style="margin-top:16px;">현장 협약 인상 테이블</div>
         <div style="overflow-x:auto;"><table class="wage-inc-table">
           <thead><tr><th>적용일</th><th>GWI</th><th>초임</th><th>52주 후</th></tr></thead>
           <tbody>${tableRows}</tbody>
