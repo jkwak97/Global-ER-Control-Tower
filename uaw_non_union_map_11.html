@@ -393,6 +393,20 @@
   .er-stat .val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--navy);margin-top:3px;font-variant-numeric:tabular-nums;}
   .er-stat .val small{font-size:11px;font-weight:400;color:var(--text-dim);margin-left:1px;}
 
+  /* 임금 도트 플롯 */
+  .er-wage-legend{display:flex;gap:18px;margin:2px 0 14px;font-family:var(--mono);font-size:11.5px;color:var(--text-dim);}
+  .er-wage-legend .wdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;}
+  .er-wage-legend .wdot.solo{background:var(--primary);}
+  .er-wage-legend .wdot.jv{background:var(--pearl);box-shadow:inset 0 0 0 1.5px var(--pearl-ink);}
+  .wage-plot{width:100%;height:auto;display:block;}
+  .wg-name{font-family:var(--mono);font-size:10.5px;font-weight:700;fill:var(--text-dim);}
+  .wg-val{font-family:var(--mono);font-size:11px;font-weight:700;fill:var(--ink);}
+  .wg-tick{font-family:var(--mono);font-size:9.5px;fill:var(--text-faint);}
+  .wg-mean{font-family:var(--mono);font-size:9px;fill:var(--text-faint);}
+  .wg-row rect.hit{fill:transparent;}
+  .wg-row:hover rect.hit{fill:color-mix(in srgb,var(--surface) 65%,transparent);}
+  .wage-miss{margin-top:10px;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);line-height:1.6;}
+
   /* 월별 DB 업로드 (관리자용 미니 아이콘) */
   .er-upload-corner{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:16px;}
   .er-upload-btn{
@@ -611,6 +625,11 @@
       <div class="eyebrow">Global Labor Relations // Compensation</div>
       <h1>법인 임금 현황</h1>
       <p>법인별 임금 수준을 그래프로 비교합니다. 하단 연필 아이콘으로 법인별 임금을 입력하면 그래프에 바로 반영됩니다.</p>
+    </div>
+
+    <div class="er-wage-legend">
+      <span><span class="wdot solo"></span>단독법인</span>
+      <span><span class="wdot jv"></span>합작법인 (J/V)</span>
     </div>
 
     <div class="graph-grid">
@@ -2253,24 +2272,61 @@ function erWageVal(name, key){
   const v = erWage[name] && erWage[name][key];
   return (typeof v==='number' && isFinite(v) && v>0) ? v : null;
 }
+function erFmtWage(v){ return v.toLocaleString(undefined, {maximumFractionDigits:2}); }
 function renderERWage(){
   ER_WAGE_METRICS.forEach(m=>{
     const el = document.getElementById('er-wage-chart-'+m.key);
     if(!el) return;
-    const rows = ER_ENTITY_ORDER.map(n=>({name:n, v: erWageVal(n, m.key)}));
-    if(!rows.some(r=>r.v!=null)){
+    const entered = ER_ENTITY_ORDER.map(n=>({name:n, v: erWageVal(n, m.key)})).filter(r=>r.v!=null);
+    if(entered.length===0){
       el.innerHTML = `<div class="graph-placeholder">데이터 준비 중<br>하단 연필 아이콘으로 입력하세요</div>`;
       return;
     }
-    const max = Math.max(...rows.map(r=>r.v||0), 1);
-    el.innerHTML = rows.map(r=>{
-      const pct = r.v ? (r.v/max*100).toFixed(1) : 0;
-      return `<div class="er-chart-row">
-        <div class="er-chart-label" style="width:108px;">${r.name}</div>
-        <div class="er-chart-track">${r.v!=null ? `<div class="er-chart-fill" style="width:${pct}%;"><div class="er-chart-seg a" style="width:100%;padding-right:0;"></div></div>` : ''}</div>
-        <div class="er-chart-total">${r.v!=null ? r.v.toLocaleString(undefined,{maximumFractionDigits:2}) : '–'}</div>
-      </div>`;
+    const missing = ER_ENTITY_ORDER.filter(n=>erWageVal(n, m.key)==null);
+    entered.sort((a,b)=>b.v-a.v);
+
+    /* 랭킹 도트 플롯: 좁은 구간에 몰린 임금 차이를 위치로 보여준다 */
+    const W=360, rowH=27, padT=20, padB=24;
+    const plotL=104, plotR=W-54;
+    const vals = entered.map(r=>r.v);
+    const vmin=Math.min(...vals), vmax=Math.max(...vals);
+    let span = vmax - vmin;
+    if(span<=0) span = Math.max(vmax*0.1, 1);
+    const lo = Math.max(0, vmin - span*0.15), hi = vmax + span*0.15;
+    const H = padT + entered.length*rowH + padB;
+    const x = v => plotL + (v-lo)/(hi-lo)*(plotR-plotL);
+
+    const step = (()=>{ const raw=(hi-lo)/3, p=Math.pow(10,Math.floor(Math.log10(raw)));
+      const c=raw/p; return (c<1.5?1:c<3.5?2:c<7.5?5:10)*p; })();
+    let ticks='';
+    for(let t=Math.ceil(lo/step)*step; t<=hi+1e-9; t+=step){
+      const tx=x(t);
+      ticks += `<line x1="${tx}" y1="${padT-6}" x2="${tx}" y2="${H-padB+4}" stroke="var(--line)" stroke-width="1" opacity=".55"/>
+        <text x="${tx}" y="${H-7}" text-anchor="middle" class="wg-tick">${erFmtWage(t)}</text>`;
+    }
+    const mean = vals.reduce((s,v)=>s+v,0)/vals.length;
+    const mx = x(mean);
+    const meanLine = `<line x1="${mx}" y1="${padT-6}" x2="${mx}" y2="${H-padB+4}" stroke="var(--text-faint)" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="${mx}" y="${padT-9}" text-anchor="middle" class="wg-mean">평균 ${erFmtWage(mean)}</text>`;
+
+    const rowsSvg = entered.map((r,i)=>{
+      const cy = padT + i*rowH + rowH/2;
+      const jv = erIsJV(r.name);
+      const dot = jv
+        ? `<circle cx="${x(r.v)}" cy="${cy}" r="5.5" fill="var(--pearl)" stroke="var(--pearl-ink)" stroke-width="1.6"/>`
+        : `<circle cx="${x(r.v)}" cy="${cy}" r="5.5" fill="var(--primary)" stroke="var(--card)" stroke-width="1.6"/>`;
+      return `<g class="wg-row"><title>${r.name} · ${erFmtWage(r.v)}</title>
+        <rect class="hit" x="0" y="${padT+i*rowH}" width="${W}" height="${rowH}" rx="5"/>
+        <text x="${plotL-9}" y="${cy+3.5}" text-anchor="end" class="wg-name">${r.name}</text>
+        <line x1="${plotL}" y1="${cy}" x2="${plotR}" y2="${cy}" stroke="var(--line)" stroke-width="1" stroke-dasharray="1 3.5"/>
+        ${dot}
+        <text x="${W-2}" y="${cy+3.5}" text-anchor="end" class="wg-val">${erFmtWage(r.v)}</text>
+      </g>`;
     }).join('');
+
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="wage-plot" role="img" aria-label="${m.label} 법인별 비교 도트 플롯">
+      ${ticks}${meanLine}${rowsSvg}
+    </svg>` + (missing.length ? `<div class="wage-miss">미입력 · ${missing.join(', ')}</div>` : '');
   });
 }
 function erToggleWageEditor(){
