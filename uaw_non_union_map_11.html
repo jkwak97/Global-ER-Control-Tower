@@ -393,6 +393,30 @@
   .er-stat .val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--navy);margin-top:3px;font-variant-numeric:tabular-nums;}
   .er-stat .val small{font-size:11px;font-weight:400;color:var(--text-dim);margin-left:1px;}
 
+  /* 임금 상단 2열 그리드 + 평균임금 테이블 */
+  .wage-top-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px;}
+  @media(max-width:920px){.wage-top-grid{grid-template-columns:1fr;}}
+  .wage-avg-mean{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin:4px 0 10px;}
+  .wage-avg-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .wage-avg-table th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);padding:8px 10px;border-bottom:1px solid var(--line);}
+  .wage-avg-table td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle;font-variant-numeric:tabular-nums;}
+  .wage-avg-table tr:last-child td{border-bottom:none;}
+  .wage-avg-table tbody tr:hover td{background:color-mix(in srgb,var(--surface) 55%,transparent);}
+  .wage-avg-table .wname{font-family:var(--mono);font-size:12px;font-weight:700;white-space:nowrap;}
+  .wage-avg-table .wname .wdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:0;}
+  .wage-avg-table .wname .wdot.solo{background:var(--primary);}
+  .wage-avg-table .wname .wdot.jv{background:var(--pearl);box-shadow:inset 0 0 0 1.5px var(--pearl-ink);}
+  .wage-avg-table .wval{font-family:var(--mono);font-weight:700;text-align:right;white-space:nowrap;}
+  .wage-avg-table .wdelta{font-family:var(--mono);font-size:12px;font-weight:700;text-align:right;white-space:nowrap;}
+  .wage-avg-table .wdelta.pos{color:color-mix(in srgb,var(--teal) 65%,var(--ink));}
+  .wage-avg-table .wdelta.neg{color:color-mix(in srgb,var(--s-filed) 70%,var(--ink));}
+  .wage-avg-table .wdelta.none{color:var(--text-faint);font-weight:400;}
+  .wbar-track{position:relative;height:14px;min-width:120px;}
+  .wbar-axis{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--text-faint);opacity:.6;}
+  .wbar-fill{position:absolute;top:2px;bottom:2px;border-radius:3px;}
+  .wbar-fill.pos{left:50%;background:var(--teal);}
+  .wbar-fill.neg{right:50%;background:var(--s-filed);opacity:.85;}
+
   /* 임금 도트 플롯 */
   .er-wage-legend{display:flex;gap:18px;margin:2px 0 14px;font-family:var(--mono);font-size:11.5px;color:var(--text-dim);}
   .er-wage-legend .wdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;}
@@ -632,7 +656,7 @@
       <span><span class="wdot jv"></span>합작법인 (J/V)</span>
     </div>
 
-    <div class="graph-grid">
+    <div class="wage-top-grid">
       <div class="graph-card">
         <h4>OP 초임</h4>
         <div class="sub">Operator 신입 초임 비교</div>
@@ -643,11 +667,12 @@
         <div class="sub">Technician 신입 초임 비교</div>
         <div id="er-wage-chart-tech"></div>
       </div>
-      <div class="graph-card">
-        <h4>평균임금</h4>
-        <div class="sub">법인별 평균임금 비교</div>
-        <div id="er-wage-chart-avg"></div>
-      </div>
+    </div>
+
+    <div class="graph-card">
+      <h4>평균임금</h4>
+      <div class="sub">법인별 평균임금 · 전체 평균 대비</div>
+      <div id="er-wage-chart-avg"></div>
     </div>
 
     <div class="er-panel" id="er-wage-editor" style="display:none;margin-top:22px;">
@@ -2274,20 +2299,62 @@ function erWageVal(name, key){
 }
 function erFmtWage(v){ return v.toLocaleString(undefined, {maximumFractionDigits:2}); }
 function renderERWage(){
-  ER_WAGE_METRICS.forEach(m=>{
-    const el = document.getElementById('er-wage-chart-'+m.key);
-    if(!el) return;
-    const entered = ER_ENTITY_ORDER.map(n=>({name:n, v: erWageVal(n, m.key)})).filter(r=>r.v!=null);
+  ['op','tech'].forEach(k=>{
+    const el = document.getElementById('er-wage-chart-'+k);
+    if(el) erRenderWageDotPlot(el, k);
+  });
+  const avgEl = document.getElementById('er-wage-chart-avg');
+  if(avgEl) erRenderWageAvgTable(avgEl);
+}
+
+/* 평균임금: 전체 평균 대비 편차 테이블 */
+function erRenderWageAvgTable(el){
+  const entered = ER_ENTITY_ORDER.map(n=>({name:n, v: erWageVal(n,'avg')})).filter(r=>r.v!=null);
+  if(entered.length===0){
+    el.innerHTML = `<div class="graph-placeholder">데이터 준비 중<br>하단 연필 아이콘으로 입력하세요</div>`;
+    return;
+  }
+  entered.sort((a,b)=>b.v-a.v);
+  const missing = ER_ENTITY_ORDER.filter(n=>erWageVal(n,'avg')==null);
+  const mean = entered.reduce((s,r)=>s+r.v,0)/entered.length;
+  const maxAbs = Math.max(...entered.map(r=>Math.abs(r.v-mean)), 1e-9);
+  const rows = entered.map(r=>{
+    const d = r.v - mean;
+    const pct = Math.min(Math.abs(d)/maxAbs*50, 50).toFixed(1);
+    const cls = d >= 0 ? 'pos' : 'neg';
+    return `<tr>
+      <td class="wname"><span class="wdot ${erIsJV(r.name)?'jv':'solo'}"></span>${r.name}</td>
+      <td><div class="wbar-track"><div class="wbar-axis"></div><div class="wbar-fill ${cls}" style="width:${pct}%;"></div></div></td>
+      <td class="wval">${erFmtWage(r.v)}</td>
+      <td class="wdelta ${cls}">${d>=0?'+':'−'}${erFmtWage(Math.abs(d))}</td>
+    </tr>`;
+  }).join('') + missing.map(n=>`<tr>
+      <td class="wname" style="color:var(--text-faint);"><span class="wdot ${erIsJV(n)?'jv':'solo'}" style="opacity:.45;"></span>${n}</td>
+      <td><div class="wbar-track"><div class="wbar-axis"></div></div></td>
+      <td class="wval" style="color:var(--text-faint);font-weight:400;">–</td>
+      <td class="wdelta none">–</td>
+    </tr>`).join('');
+  el.innerHTML = `
+    <div class="wage-avg-mean">전체 평균 <b>${erFmtWage(mean)}</b> (입력 ${entered.length}개 법인 기준)</div>
+    <div style="overflow-x:auto;"><table class="wage-avg-table">
+      <thead><tr><th style="min-width:130px;">법인</th><th>평균 대비 편차</th><th style="text-align:right;">평균임금</th><th style="text-align:right;">Δ 평균</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
+
+/* OP/Technician 초임: 랭킹 도트 플롯 */
+function erRenderWageDotPlot(el, key){
+    const entered = ER_ENTITY_ORDER.map(n=>({name:n, v: erWageVal(n, key)})).filter(r=>r.v!=null);
     if(entered.length===0){
       el.innerHTML = `<div class="graph-placeholder">데이터 준비 중<br>하단 연필 아이콘으로 입력하세요</div>`;
       return;
     }
-    const missing = ER_ENTITY_ORDER.filter(n=>erWageVal(n, m.key)==null);
+    const missing = ER_ENTITY_ORDER.filter(n=>erWageVal(n, key)==null);
     entered.sort((a,b)=>b.v-a.v);
 
     /* 랭킹 도트 플롯: 좁은 구간에 몰린 임금 차이를 위치로 보여준다 */
-    const W=360, rowH=27, padT=20, padB=24;
-    const plotL=104, plotR=W-54;
+    const W=430, rowH=30, padT=22, padB=26;
+    const plotL=108, plotR=W-56;
     const vals = entered.map(r=>r.v);
     const vmin=Math.min(...vals), vmax=Math.max(...vals);
     let span = vmax - vmin;
@@ -2324,10 +2391,9 @@ function renderERWage(){
       </g>`;
     }).join('');
 
-    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="wage-plot" role="img" aria-label="${m.label} 법인별 비교 도트 플롯">
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="wage-plot" role="img" aria-label="법인별 비교 도트 플롯">
       ${ticks}${meanLine}${rowsSvg}
     </svg>` + (missing.length ? `<div class="wage-miss">미입력 · ${missing.join(', ')}</div>` : '');
-  });
 }
 function erToggleWageEditor(){
   const p = document.getElementById('er-wage-editor');
