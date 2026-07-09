@@ -431,6 +431,27 @@
   .wg-row:hover rect.hit{fill:color-mix(in srgb,var(--surface) 65%,transparent);}
   .wage-miss{margin-top:10px;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);line-height:1.6;}
 
+  /* 임금 인상 내역 (협약 스텝 차트 + 테이블) */
+  .wage-inc-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:24px;align-items:start;margin-top:6px;}
+  @media(max-width:920px){.wage-inc-grid{grid-template-columns:1fr;}}
+  .wage-inc-legend{display:flex;gap:16px;margin-bottom:6px;font-family:var(--mono);font-size:11px;color:var(--text-dim);}
+  .wage-inc-legend .sw{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:3px;}
+  .wage-inc-legend .sw.a{background:var(--primary);}
+  .wage-inc-legend .sw.b{background:var(--teal);}
+  .wi-tick,.wi-x{font-family:var(--mono);font-size:9.5px;fill:var(--text-faint);}
+  .wi-val{font-family:var(--mono);font-size:10px;font-weight:700;fill:var(--ink);}
+  .wi-end{font-family:var(--mono);font-size:10px;font-weight:700;}
+  .wi-gwi{font-family:var(--mono);font-size:9.5px;font-weight:700;fill:color-mix(in srgb,var(--teal) 65%,var(--ink));}
+  .wi-gwi-cap{font-family:var(--mono);font-size:8.5px;fill:var(--text-faint);}
+  .wage-inc-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .wage-inc-table th{text-align:right;font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint);padding:7px 10px;border-bottom:1px solid var(--line);}
+  .wage-inc-table th:first-child{text-align:left;}
+  .wage-inc-table td{padding:8px 10px;border-bottom:1px solid var(--line);font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;color:var(--ink);}
+  .wage-inc-table td:first-child{text-align:left;color:var(--text-dim);}
+  .wage-inc-table tr:last-child td{border-bottom:none;}
+  .wage-inc-table .gwi{font-weight:700;color:color-mix(in srgb,var(--teal) 65%,var(--ink));}
+  .wage-inc-foot{margin-top:10px;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);line-height:1.6;}
+
   /* 월별 DB 업로드 (관리자용 미니 아이콘) */
   .er-upload-corner{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:16px;}
   .er-upload-btn{
@@ -673,6 +694,12 @@
       <h4>평균임금</h4>
       <div class="sub">법인별 평균임금 · 전체 평균 대비</div>
       <div id="er-wage-chart-avg"></div>
+    </div>
+
+    <div class="graph-card" style="margin-top:22px;">
+      <h4>임금 인상 내역 — ESGM</h4>
+      <div class="sub">UAW 협약 · Production / Quality / SRP / Material Handling 기본급</div>
+      <div id="er-wage-increase"></div>
     </div>
 
     <div class="er-panel" id="er-wage-editor" style="display:none;margin-top:22px;">
@@ -2433,9 +2460,126 @@ async function erWageSave(){
   const st = document.getElementById('er-wage-status');
   if(st){ st.textContent = '✓ 저장되었습니다'; st.className = 'er-upload-status ok'; setTimeout(()=>{ st.textContent=''; }, 4000); }
 }
+/* 임금 인상 내역 — 협약 기반 (법인별 확장 가능) */
+const ER_WAGE_INCREASES = {
+  'ESGM': {
+    note: 'UAW 협약',
+    steps: [
+      {date:'2023-11-20', gwi:null, start:26.91, after52:30.50},
+      {date:'2024-09-16', gwi:3,    start:27.72, after52:31.42},
+      {date:'2025-09-15', gwi:3,    start:28.55, after52:32.36},
+      {date:'2026-09-21', gwi:3,    start:29.41, after52:33.33},
+      {date:'2027-09-20', gwi:5,    start:30.88, after52:35.00}
+    ],
+    /* 기본급 표 기재 이전에 적용된 GWI */
+    preGwi: [{date:'2023-10-23', gwi:11}]
+  }
+};
+
+function erRenderWageIncrease(){
+  const host = document.getElementById('er-wage-increase');
+  if(!host) return;
+  const d = ER_WAGE_INCREASES['ESGM'];
+  const steps = d.steps;
+  const n = steps.length;
+
+  const W=560, H=270, padL=46, padR=84, padT=40, padB=30;
+  const plotR = W-padR;
+  const x = i => padL + i*(plotR-padL)/(n-1);
+  const vals = steps.flatMap(s=>[s.start, s.after52]);
+  const vmin = Math.min(...vals), vmax = Math.max(...vals);
+  const span = vmax-vmin;
+  const lo = vmin - span*0.14, hi = vmax + span*0.14;
+  const y = v => padT + (H-padT-padB)*(1-(v-lo)/(hi-lo));
+  const tail = 26; /* 마지막 단계 유지 구간 */
+
+  /* y 그리드 */
+  const stepT = (()=>{ const raw=(hi-lo)/3, p=Math.pow(10,Math.floor(Math.log10(raw)));
+    const c=raw/p; return (c<1.5?1:c<3.5?2:c<7.5?5:10)*p; })();
+  let grid='';
+  for(let t=Math.ceil(lo/stepT)*stepT; t<=hi+1e-9; t+=stepT){
+    grid += `<line x1="${padL}" y1="${y(t)}" x2="${plotR+tail}" y2="${y(t)}" stroke="var(--line)" stroke-width="1" opacity=".6"/>
+      <text x="${padL-7}" y="${y(t)+3.5}" text-anchor="end" class="wi-tick">$${t.toFixed(0)}</text>`;
+  }
+
+  /* 계단 경로: 인상 시점에 점프, 다음 시점까지 유지 */
+  const stepPath = key => {
+    let path = `M ${x(0)} ${y(steps[0][key])}`;
+    for(let i=1;i<n;i++) path += ` H ${x(i)} V ${y(steps[i][key])}`;
+    return path + ` H ${plotR+tail}`;
+  };
+  /* 두 선 사이 밴드 (Starting → 52주 인상 폭) */
+  let band = `M ${x(0)} ${y(steps[0].after52)}`;
+  for(let i=1;i<n;i++) band += ` H ${x(i)} V ${y(steps[i].after52)}`;
+  band += ` H ${plotR+tail} V ${y(steps[n-1].start)}`;
+  for(let i=n-1;i>=1;i--) band += ` H ${x(i)} V ${y(steps[i-1].start)}`;
+  band += ` H ${x(0)} Z`;
+
+  /* 시점별 점 + 값 라벨 + GWI 배지 */
+  let marks='', chips='';
+  steps.forEach((s,i)=>{
+    const xi = x(i);
+    marks += `<circle cx="${xi}" cy="${y(s.after52)}" r="4.5" fill="var(--primary)" stroke="var(--card)" stroke-width="1.6"/>
+      <text x="${xi}" y="${y(s.after52)-9}" text-anchor="middle" class="wi-val">${s.after52.toFixed(2)}</text>
+      <circle cx="${xi}" cy="${y(s.start)}" r="4.5" fill="var(--teal)" stroke="var(--card)" stroke-width="1.6"/>
+      <text x="${xi}" y="${y(s.start)+17}" text-anchor="middle" class="wi-val">${s.start.toFixed(2)}</text>
+      <line x1="${xi}" y1="${padT-4}" x2="${xi}" y2="${H-padB+4}" stroke="var(--line)" stroke-width="1" opacity=".45"/>
+      <text x="${xi}" y="${H-8}" text-anchor="middle" class="wi-x">'${s.date.slice(2,4)}.${+s.date.slice(5,7)}.${+s.date.slice(8,10)}</text>`;
+    if(s.gwi!=null){
+      chips += `<text x="${xi}" y="${padT-22}" text-anchor="middle" class="wi-gwi">+${s.gwi}%</text>`;
+    } else {
+      chips += `<text x="${xi}" y="${padT-22}" text-anchor="middle" class="wi-gwi-cap">기준</text>`;
+    }
+  });
+  chips += `<text x="${padL-7}" y="${padT-22}" text-anchor="end" class="wi-gwi-cap">GWI</text>`;
+
+  const endLbl = `
+    <text x="${plotR+tail+5}" y="${y(steps[n-1].after52)+3.5}" class="wi-end" fill="var(--primary)">52주 후</text>
+    <text x="${plotR+tail+5}" y="${y(steps[n-1].start)+3.5}" class="wi-end" fill="var(--teal)">Starting</text>`;
+
+  const svg = `<svg viewBox="0 0 ${W} ${H}" class="wage-plot" role="img" aria-label="ESGM 임금 인상 계단 차트">
+    ${grid}
+    <path d="${band}" fill="var(--teal)" opacity="0.10"/>
+    <path d="${stepPath('after52')}" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linejoin="round"/>
+    <path d="${stepPath('start')}" fill="none" stroke="var(--teal)" stroke-width="2.2" stroke-linejoin="round"/>
+    ${chips}${marks}${endLbl}
+  </svg>`;
+
+  const gwiTotal = [...d.preGwi.map(g=>g.gwi), ...steps.filter(s=>s.gwi!=null).map(s=>s.gwi)];
+  const cum = (gwiTotal.reduce((s,g)=>s*(1+g/100), 1)-1)*100;
+
+  const tableRows =
+    d.preGwi.map(g=>`<tr><td>${g.date}</td><td class="gwi">+${g.gwi}%</td><td style="color:var(--text-faint);">–</td><td style="color:var(--text-faint);">–</td></tr>`).join('') +
+    steps.map(s=>`<tr>
+      <td>${s.date}</td>
+      <td class="gwi">${s.gwi!=null ? '+'+s.gwi+'%' : '–'}</td>
+      <td>$${s.start.toFixed(2)}</td>
+      <td>$${s.after52.toFixed(2)}</td>
+    </tr>`).join('');
+
+  host.innerHTML = `
+    <div class="wage-inc-grid">
+      <div>
+        <div class="wage-inc-legend">
+          <span><span class="sw b"></span>Starting Wage Rate</span>
+          <span><span class="sw a"></span>Wage Rate After 52 Weeks</span>
+        </div>
+        ${svg}
+      </div>
+      <div>
+        <div style="overflow-x:auto;"><table class="wage-inc-table">
+          <thead><tr><th>적용일</th><th>GWI</th><th>Starting</th><th>52주 후</th></tr></thead>
+          <tbody>${tableRows}</tbody>
+        </table></div>
+        <div class="wage-inc-foot">GWI 누적 인상률 ${cum.toFixed(1)}% ('23.10 → '27.9) · ESGM은 UAW와 단체협약을 체결한 사업장으로 협약상 인상 스케줄이 확정되어 있습니다.</div>
+      </div>
+    </div>`;
+}
+
 (async function initERwage(){
   await erLoadWage();
   renderERWage();
+  erRenderWageIncrease();
 })();
 
 (async function initERtracker(){
