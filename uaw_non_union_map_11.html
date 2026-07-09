@@ -452,6 +452,19 @@
   .wage-inc-table .gwi{font-weight:700;color:color-mix(in srgb,var(--teal) 65%,var(--ink));}
   .wage-inc-foot{margin-top:10px;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);line-height:1.6;}
 
+  /* 법인별 임금 인상 History 섹션 */
+  .wage-section{margin-top:36px;padding-top:26px;border-top:2px solid var(--line);}
+  .wage-section-title{font-size:17px;font-weight:800;color:var(--navy);letter-spacing:-.01em;}
+  .wage-section-sub{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+  .wage-hist-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
+  .wage-hist-note{margin-top:8px;font-family:var(--mono);font-size:10.5px;color:var(--text-dim);line-height:1.6;}
+  .wh-tick,.wh-x{font-family:var(--mono);font-size:9.5px;fill:var(--text-faint);}
+  .wh-val{font-family:var(--mono);font-size:9.5px;font-weight:700;fill:var(--ink);}
+  .wh-none{font-family:var(--mono);font-size:9.5px;fill:var(--text-faint);}
+  .wage-inc-now{display:inline-block;margin:6px 0 12px;padding:8px 12px;border-radius:7px;background:var(--flash);font-family:var(--mono);font-size:12px;color:var(--text-dim);}
+  .wage-inc-now b{color:var(--ink);}
+  .wage-inc-table tr.cur td{background:var(--flash);}
+
   /* 월별 DB 업로드 (관리자용 미니 아이콘) */
   .er-upload-corner{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:16px;}
   .er-upload-btn{
@@ -696,10 +709,20 @@
       <div id="er-wage-chart-avg"></div>
     </div>
 
-    <div class="graph-card" style="margin-top:22px;">
-      <h4>임금 인상 내역 — ESGM</h4>
-      <div class="sub">UAW 협약 · Production / Quality / SRP / Material Handling 기본급</div>
-      <div id="er-wage-increase"></div>
+    <div class="wage-section">
+      <div class="wage-section-title">법인별 임금 인상 History</div>
+      <div class="wage-section-sub">연도별 인상률 (%) · 공통 스케일</div>
+      <div class="er-wage-legend" style="margin:10px 0 16px;">
+        <span><span class="wdot" style="background:var(--primary);"></span>사무 (Office)</span>
+        <span><span class="wdot" style="background:var(--teal);"></span>현장 (Prod.)</span>
+      </div>
+      <div class="wage-hist-grid" id="er-wage-history"></div>
+
+      <div class="graph-card" style="margin-top:22px;">
+        <h4>ESGM · UAW 협약 임금 상세</h4>
+        <div class="sub">Production / Quality / SRP / Material Handling 기본급 · CBA 확정 스케줄</div>
+        <div id="er-wage-increase"></div>
+      </div>
     </div>
 
     <div class="er-panel" id="er-wage-editor" style="display:none;margin-top:22px;">
@@ -2460,6 +2483,61 @@ async function erWageSave(){
   const st = document.getElementById('er-wage-status');
   if(st){ st.textContent = '✓ 저장되었습니다'; st.className = 'er-upload-status ok'; setTimeout(()=>{ st.textContent=''; }, 4000); }
 }
+/* 법인별 연도별 임금 인상률 History (사무/현장, %) — 빈 값은 데이터 없음 */
+const ER_WAGE_HISTORY = [
+  {name:'ESMI', note:'사무 1·3월 총 2회 인상 / 현장 3·9월 총 2회 인상',
+   years:{'23':{office:9.3, prod:4.7}, '24':{office:5.3, prod:10.8}, '25':{office:4.6, prod:3.9}, '26':{office:10.3, prod:9.6}}},
+  {name:'ESHD', years:{'25':{office:5.1, prod:4}, '26':{office:3.5, prod:4}}},
+  {name:'ESAZ', years:{'25':{office:3.3}, '26':{office:4, prod:3.5}}},
+  {name:'ESGM', note:'현장(Prod.) 인상은 UAW 협약(CBA)으로 결정 · 아래 상세 참조',
+   years:{'25':{office:5.5}, '26':{office:6}}},
+  {name:'ESOT', note:"'26년 임단협 진행중",
+   years:{'25':{office:4, prod:4}, '26':{office:2.5}}},
+  {name:'ESHG', years:{'25':{office:4}, '26':{office:5.2, prod:2.2}}}
+];
+
+function erRenderWageHistory(){
+  const host = document.getElementById('er-wage-history');
+  if(!host) return;
+  const YMAX = 12; /* 전체 법인 공통 스케일 (%) */
+  const fmtPct = v => (v%1 ? v.toFixed(1) : String(v));
+
+  host.innerHTML = ER_WAGE_HISTORY.map(sub=>{
+    const years = Object.keys(sub.years).sort();
+    const W=300, H=172, padL=30, padR=8, padT=18, padB=20;
+    const gw = (W-padL-padR)/years.length;
+    const y = v => padT + (H-padT-padB)*(1 - v/YMAX);
+    const y0 = y(0);
+
+    let grid='';
+    for(let t=0; t<=YMAX; t+=4){
+      grid += `<line x1="${padL}" y1="${y(t)}" x2="${W-padR}" y2="${y(t)}" stroke="var(--line)" stroke-width="1" opacity="${t===0?1:.55}" ${t>0?'stroke-dasharray="3 4"':''}/>
+        <text x="${padL-6}" y="${y(t)+3.5}" text-anchor="end" class="wh-tick">${t}%</text>`;
+    }
+    const bw=20, gap=4;
+    let bars='';
+    years.forEach((yr,i)=>{
+      const cx = padL + i*gw + gw/2;
+      const d = sub.years[yr];
+      const draw = (val, dx, color) => {
+        if(val==null) return `<text x="${cx+dx+bw/2}" y="${y0-5}" text-anchor="middle" class="wh-none">–</text>`;
+        const by = y(val);
+        return `<rect x="${cx+dx}" y="${by}" width="${bw}" height="${Math.max(y0-by,1.5)}" rx="3" fill="${color}"><title>'${yr} ${color==='var(--primary)'?'사무':'현장'} +${fmtPct(val)}%</title></rect>
+          <text x="${cx+dx+bw/2}" y="${by-4}" text-anchor="middle" class="wh-val">${fmtPct(val)}</text>`;
+      };
+      bars += draw(d.office, -bw-gap/2, 'var(--primary)');
+      bars += draw(d.prod!=null ? d.prod : null, gap/2, 'var(--teal)');
+      bars += `<text x="${cx}" y="${H-6}" text-anchor="middle" class="wh-x">'${yr}</text>`;
+    });
+
+    return `<div class="graph-card">
+      <h4>${sub.name}</h4>
+      <svg viewBox="0 0 ${W} ${H}" class="wage-plot" role="img" aria-label="${sub.name} 연도별 임금 인상률">${grid}${bars}</svg>
+      ${sub.note ? `<div class="wage-hist-note">${sub.note}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
 /* 임금 인상 내역 — 협약 기반 (법인별 확장 가능) */
 const ER_WAGE_INCREASES = {
   'ESGM': {
@@ -2535,40 +2613,61 @@ function erRenderWageIncrease(){
 
   const endLbl = `
     <text x="${plotR+tail+5}" y="${y(steps[n-1].after52)+3.5}" class="wi-end" fill="var(--primary)">52주 후</text>
-    <text x="${plotR+tail+5}" y="${y(steps[n-1].start)+3.5}" class="wi-end" fill="var(--teal)">Starting</text>`;
+    <text x="${plotR+tail+5}" y="${y(steps[n-1].start)+3.5}" class="wi-end" fill="var(--teal)">초임</text>`;
+
+  /* 열람일 기준 현재 적용 스텝 계산 + '오늘' 마커 */
+  const now = Date.now();
+  const dts = steps.map(s=>new Date(s.date+'T00:00:00').getTime());
+  let cur = 0;
+  for(let i=0;i<n;i++){ if(dts[i] <= now) cur = i; }
+  let todayX;
+  if(now <= dts[0]) todayX = x(0);
+  else if(now >= dts[n-1]) todayX = plotR + tail*0.55;
+  else {
+    let i=0; while(i<n-1 && dts[i+1]<=now) i++;
+    todayX = x(i) + (now-dts[i])/(dts[i+1]-dts[i])*(x(i+1)-x(i));
+  }
+  const todayMark = `
+    <line x1="${todayX}" y1="${padT-4}" x2="${todayX}" y2="${H-padB+4}" stroke="color-mix(in srgb,var(--teal) 65%,var(--ink))" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="${todayX}" y="${padT-8}" text-anchor="middle" class="wi-gwi">오늘</text>
+    <circle cx="${x(cur)}" cy="${y(steps[cur].after52)}" r="8" fill="none" stroke="var(--primary)" stroke-width="1.4" opacity=".55"/>
+    <circle cx="${x(cur)}" cy="${y(steps[cur].start)}" r="8" fill="none" stroke="var(--teal)" stroke-width="1.4" opacity=".7"/>`;
 
   const svg = `<svg viewBox="0 0 ${W} ${H}" class="wage-plot" role="img" aria-label="ESGM 임금 인상 계단 차트">
     ${grid}
     <path d="${band}" fill="var(--teal)" opacity="0.10"/>
     <path d="${stepPath('after52')}" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linejoin="round"/>
     <path d="${stepPath('start')}" fill="none" stroke="var(--teal)" stroke-width="2.2" stroke-linejoin="round"/>
-    ${chips}${marks}${endLbl}
+    ${chips}${marks}${todayMark}${endLbl}
   </svg>`;
+
+  const todayStr = new Date().toISOString().slice(0,10);
+  const nowLine = `<div class="wage-inc-now">열람일 ${todayStr} 기준 적용 — 초임 <b>$${steps[cur].start.toFixed(2)}</b> · 52주 후 <b>$${steps[cur].after52.toFixed(2)}</b> (${steps[cur].date} 인상분)</div>`;
 
   const gwiTotal = [...d.preGwi.map(g=>g.gwi), ...steps.filter(s=>s.gwi!=null).map(s=>s.gwi)];
   const cum = (gwiTotal.reduce((s,g)=>s*(1+g/100), 1)-1)*100;
 
   const tableRows =
     d.preGwi.map(g=>`<tr><td>${g.date}</td><td class="gwi">+${g.gwi}%</td><td style="color:var(--text-faint);">–</td><td style="color:var(--text-faint);">–</td></tr>`).join('') +
-    steps.map(s=>`<tr>
+    steps.map((s,i)=>`<tr${i===cur?' class="cur"':''}>
       <td>${s.date}</td>
       <td class="gwi">${s.gwi!=null ? '+'+s.gwi+'%' : '–'}</td>
       <td>$${s.start.toFixed(2)}</td>
       <td>$${s.after52.toFixed(2)}</td>
     </tr>`).join('');
 
-  host.innerHTML = `
+  host.innerHTML = nowLine + `
     <div class="wage-inc-grid">
       <div>
         <div class="wage-inc-legend">
-          <span><span class="sw b"></span>Starting Wage Rate</span>
-          <span><span class="sw a"></span>Wage Rate After 52 Weeks</span>
+          <span><span class="sw b"></span>초임 (Starting Wage Rate)</span>
+          <span><span class="sw a"></span>52주 후 (After 52 Weeks)</span>
         </div>
         ${svg}
       </div>
       <div>
         <div style="overflow-x:auto;"><table class="wage-inc-table">
-          <thead><tr><th>적용일</th><th>GWI</th><th>Starting</th><th>52주 후</th></tr></thead>
+          <thead><tr><th>적용일</th><th>GWI</th><th>초임</th><th>52주 후</th></tr></thead>
           <tbody>${tableRows}</tbody>
         </table></div>
         <div class="wage-inc-foot">GWI 누적 인상률 ${cum.toFixed(1)}% ('23.10 → '27.9) · ESGM은 UAW와 단체협약을 체결한 사업장으로 협약상 인상 스케줄이 확정되어 있습니다.</div>
@@ -2579,6 +2678,7 @@ function erRenderWageIncrease(){
 (async function initERwage(){
   await erLoadWage();
   renderERWage();
+  erRenderWageHistory();
   erRenderWageIncrease();
 })();
 
