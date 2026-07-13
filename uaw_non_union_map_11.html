@@ -1893,7 +1893,7 @@ function renderERDetail(){
         </div>
         <div>
           <div class="er-dt-stats-head">
-            <span class="ttl">평균 지표 · 현채인 기준</span>
+            <span class="ttl" id="er-dtstat-cap-${e.id}">평균 지표 · ${f} 기준</span>
             <button type="button" class="er-switch ${g==='사무'?'b':''}" id="er-dtsw-${e.id}" onclick="erToggleDetailGroup('${e.id}')" role="switch" aria-checked="${g==='사무'}" aria-label="현장/사무 전환">
               <span class="er-switch-knob"></span>
               <span class="er-switch-lbl">현장</span>
@@ -1916,13 +1916,22 @@ function erUpdateDetailStats(id){
   const e = erEntities.find(x=>x.id===id);
   const tEl = document.getElementById('er-dtstat-t-'+id);
   if(!e || !tEl) return;
+  const f = erDetailFilter[id] || '전체';
   const g = erDetailGroup[id] || '현장';
-  const leaf = e.groups['현채인'][g];
-  const has = erHeadcount(leaf) > 0;
+  /* 주재원/현채인/전체 x 사무/현장 교차 필터. 값 0인 leaf(예: 주재원 근속 미보유)는 결측으로 취급해 가중평균에서 제외 */
+  const leaves = (f==='전체' ? ER_TYPE_KEYS.map(t=>e.groups[t][g]) : [e.groups[f][g]]);
+  const wavg = field => {
+    const withVal = leaves.filter(l=>erHeadcount(l)>0 && l[field]>0);
+    const hc = withVal.reduce((s,l)=>s+erHeadcount(l),0);
+    return hc>0 ? withVal.reduce((s,l)=>s+l[field]*erHeadcount(l),0)/hc : null;
+  };
+  const tenure = wavg('tenure'), age = wavg('age');
+  const cap = document.getElementById('er-dtstat-cap-'+id);
+  if(cap) cap.textContent = '평균 지표 · '+f+' 기준';
   document.getElementById('er-dtstat-tl-'+id).textContent = g+'직 평균 근속';
   document.getElementById('er-dtstat-al-'+id).textContent = g+'직 평균 나이';
-  tEl.innerHTML = has && leaf.tenure ? leaf.tenure.toFixed(1)+'<small>년</small>' : '–';
-  document.getElementById('er-dtstat-a-'+id).innerHTML = has && leaf.age ? leaf.age.toFixed(1)+'<small>세</small>' : '–';
+  tEl.innerHTML = tenure!=null ? tenure.toFixed(1)+'<small>년</small>' : '–';
+  document.getElementById('er-dtstat-a-'+id).innerHTML = age!=null ? age.toFixed(1)+'<small>세</small>' : '–';
 }
 
 function erToggleDetailGroup(id){
@@ -1963,6 +1972,7 @@ function erSetDetailFilter(id, f){
     if(b) b.classList.toggle('active', k===f);
   });
   erUpdateDetailBars(id);
+  erUpdateDetailStats(id);
 }
 
 function renderERsummary(){
