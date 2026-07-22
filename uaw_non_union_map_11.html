@@ -466,6 +466,101 @@
   .wage-inc-now b{color:var(--ink);}
   .wage-inc-table tr.cur td{background:var(--flash);}
 
+  /* ================= ER Issue Tracker (ESMI Lansing) ================= */
+  :root{ --it-navy:#1C3557; --it-green:#006600; --it-high:#D6394A; --it-med:#E8A33D; --it-low:#3FAE6B; }
+  #er-tab-tracker{ --card:var(--card); }
+  .it-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+  @media(max-width:640px){.it-cards{grid-template-columns:1fr;}}
+  .it-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;box-shadow:var(--shadow);}
+  .it-card .lbl{font-size:11.5px;color:var(--text-dim);font-weight:600;}
+  .it-card .val{font-size:30px;font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1;}
+  .it-card.high .val{color:var(--it-high);}
+  .it-card.amber .val{color:var(--it-med);}
+  .it-card .val.plain{color:var(--it-navy);}
+  :root[data-theme="dark"] .it-card .val.plain,@media(prefers-color-scheme:dark){.it-card .val.plain{color:var(--navy);}}
+
+  .it-panel{background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);margin-bottom:22px;overflow:hidden;}
+  .it-panel-head{background:var(--it-navy);color:#fff;padding:12px 18px;font-size:13px;font-weight:700;letter-spacing:.01em;display:flex;align-items:center;justify-content:space-between;}
+  .it-panel-body{padding:16px 18px;}
+
+  .it-risk-preview{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:9px;margin-bottom:16px;border:1px solid var(--line);background:var(--surface);}
+  .it-risk-badge{font-size:13px;font-weight:800;padding:5px 12px;border-radius:999px;white-space:nowrap;color:#fff;}
+  .it-risk-badge.HIGH{background:var(--it-high);}
+  .it-risk-badge.MEDIUM{background:var(--it-med);}
+  .it-risk-badge.LOW{background:var(--it-low);}
+  .it-risk-badge.NONE{background:var(--text-faint);}
+  .it-risk-reason{font-size:12.5px;color:var(--text-dim);line-height:1.5;}
+
+  .it-field{margin-bottom:16px;}
+  .it-field > label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);margin-bottom:7px;}
+  .it-field .req{color:var(--it-high);margin-left:3px;}
+  .it-select,.it-text,.it-date{width:100%;max-width:340px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;background:var(--card);color:var(--ink);}
+  .it-select:focus,.it-text:focus,.it-date:focus{outline:none;border-color:var(--teal);}
+  .it-text{max-width:none;}
+
+  .it-phase{border:1px solid var(--line);border-radius:9px;margin-bottom:10px;overflow:hidden;}
+  .it-phase-head{display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;background:none;border:none;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink);font-size:13px;font-weight:700;}
+  .it-phase.p1 .it-phase-head{border-left:4px solid var(--it-low);}
+  .it-phase.p2 .it-phase-head{border-left:4px solid var(--it-med);}
+  .it-phase.p3 .it-phase-head{border-left:4px solid var(--it-high);}
+  .it-phase-head:hover{background:var(--surface);}
+  .it-phase-head .chev{font-size:9px;color:var(--text-faint);transition:transform .25s;}
+  .it-phase.open .it-phase-head .chev{transform:rotate(90deg);}
+  .it-phase-head .cnt{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-faint);}
+  .it-chips{display:none;flex-wrap:wrap;gap:8px;padding:4px 14px 14px;}
+  .it-phase.open .it-chips{display:flex;}
+  .it-chip{display:inline-flex;align-items:center;min-height:38px;padding:7px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--text-dim);font-size:13px;cursor:pointer;transition:all .12s;line-height:1.25;user-select:none;}
+  .it-chip:hover{border-color:var(--text-faint);}
+  .it-chip small{display:block;font-size:10.5px;color:var(--text-faint);margin-top:1px;}
+  .it-phase.p1 .it-chip.on{background:color-mix(in srgb,var(--it-low) 14%,var(--card));border-color:var(--it-low);color:var(--ink);}
+  .it-phase.p2 .it-chip.on{background:color-mix(in srgb,var(--it-med) 16%,var(--card));border-color:var(--it-med);color:var(--ink);}
+  .it-phase.p3 .it-chip.on{background:color-mix(in srgb,var(--it-high) 14%,var(--card));border-color:var(--it-high);color:var(--ink);}
+  .it-chip.on small{color:var(--text-dim);}
+
+  .it-toggle-row{display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .it-switch{position:relative;width:44px;height:25px;border-radius:999px;background:var(--line);border:none;cursor:pointer;flex-shrink:0;transition:background .2s;}
+  .it-switch.on{background:var(--it-green);}
+  .it-switch::after{content:'';position:absolute;top:2px;left:2px;width:21px;height:21px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 2px rgba(0,0,0,.3);}
+  .it-switch.on::after{transform:translateX(19px);}
+  .it-toggle-row span{font-size:13.5px;color:var(--ink);}
+
+  .it-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+  .it-btn{background:var(--it-green);color:#fff;border:none;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:filter .15s;}
+  .it-btn:hover{filter:brightness(1.08);}
+  .it-btn.ghost{background:none;border:1px solid var(--line);color:var(--text-dim);}
+  .it-btn.ghost:hover{border-color:var(--text-faint);color:var(--ink);filter:none;}
+  .it-confirm{font-size:13px;color:var(--it-green);font-weight:700;padding:8px 0;min-height:20px;}
+
+  .it-table-wrap{overflow-x:auto;}
+  .it-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .it-table th{text-align:left;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint);padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface);}
+  .it-table th.sortable{cursor:pointer;user-select:none;}
+  .it-table td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  .it-table tr:last-child td{border-bottom:none;}
+  .it-table tbody tr:hover td{background:color-mix(in srgb,var(--surface) 55%,transparent);}
+  .it-kw{display:inline-block;background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin:1px 2px 1px 0;font-size:11px;color:var(--text-dim);}
+  .it-lvl{display:inline-block;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:800;color:#fff;}
+  .it-lvl.HIGH{background:var(--it-high);}
+  .it-lvl.MEDIUM{background:var(--it-med);}
+  .it-lvl.LOW{background:var(--it-low);}
+  .it-del{background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:15px;line-height:1;padding:2px 5px;border-radius:5px;}
+  .it-del:hover{color:var(--it-high);background:color-mix(in srgb,var(--it-high) 12%,transparent);}
+  .it-empty{padding:34px 16px;text-align:center;color:var(--text-faint);font-size:13px;}
+  @keyframes itRowIn{from{background:color-mix(in srgb,var(--it-low) 30%,transparent);}to{background:transparent;}}
+  .it-row-new td{animation:itRowIn 1.4s ease;}
+
+  .it-heat{display:flex;flex-direction:column;gap:8px;}
+  .it-heat-row{display:grid;grid-template-columns:160px 1fr auto;gap:12px;align-items:center;}
+  .it-heat-name{font-size:12.5px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .it-heat-track{height:20px;background:var(--surface);border-radius:5px;overflow:hidden;}
+  .it-heat-fill{height:100%;border-radius:5px;transition:width .4s;}
+  .it-heat-fill.HIGH{background:var(--it-high);}
+  .it-heat-fill.MEDIUM{background:var(--it-med);}
+  .it-heat-fill.LOW{background:var(--it-low);}
+  .it-heat-fill.NONE{background:var(--line);}
+  .it-heat-meta{font-family:var(--mono);font-size:11px;color:var(--text-dim);white-space:nowrap;font-variant-numeric:tabular-nums;}
+  @media(max-width:640px){.it-heat-row{grid-template-columns:110px 1fr auto;}}
+
   /* 월별 DB 업로드 (관리자용 미니 아이콘) */
   .er-upload-corner{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:16px;}
   .er-upload-btn{
@@ -609,6 +704,7 @@
   <div class="site-tabs">
     <button type="button" class="site-tab active" data-tab="headcount" onclick="switchERTab('headcount')">법인 인원 현황</button>
     <button type="button" class="site-tab" data-tab="wage" onclick="switchERTab('wage')">법인 임금 현황</button>
+    <button type="button" class="site-tab" data-tab="tracker" onclick="switchERTab('tracker')">ESMI Lansing</button>
   </div>
 
   <div class="tab-panel active" id="er-tab-headcount">
@@ -745,6 +841,16 @@
         </svg>
       </button>
     </div>
+  </div>
+
+  <div class="tab-panel" id="er-tab-tracker">
+    <div class="hero">
+      <div class="eyebrow">Employee Relations // ESMI Lansing</div>
+      <h1>ER Issue Tracker</h1>
+      <p>조직화 관련 현장 이슈를 빠르게 기록하세요. 부서·날짜·키워드만 선택하면 위험도가 자동 분류됩니다.</p>
+    </div>
+    <div id="it-dashboard"></div>
+    <div id="it-form"></div>
   </div>
 
 </div>
@@ -1588,6 +1694,8 @@ function switchERTab(tab){
   document.querySelectorAll('#dashboard-ertracker .site-tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
   document.getElementById('er-tab-headcount').classList.toggle('active', tab==='headcount');
   document.getElementById('er-tab-wage').classList.toggle('active', tab==='wage');
+  document.getElementById('er-tab-tracker').classList.toggle('active', tab==='tracker');
+  if(tab==='tracker' && window.itRender) window.itRender();
 }
 
 /* ================= E.R. Tracker : 법인 인원 현황 (드릴다운) ================= */
@@ -2730,6 +2838,351 @@ function erRenderWageIncrease(){
   renderERDetail();
   renderERDonut();
   renderERTrend();
+})();
+
+/* ================= ER Issue Tracker (ESMI Lansing) ================= */
+(function(){
+  const IT_KEY = 'er_incidents';
+  const IT_DEPTS = ['Assembly - Line 1','Assembly - Line 2','Electrode','Formation','Maintenance','Quality','Warehouse / Logistics','Other'];
+  const IT_PHASES = {
+    1: {label:'Phase I — Latent Risk', base:'LOW', cls:'p1', items:[
+      ['Unusual language used','고충·권리 등 평소 사용하지 않는 언어'],
+      ['Excessive OT complaint','계속된 초과근로 불만'],
+      ['Supervisor discrimination complaint',''],
+      ['HR policy / document request','HR 제도 목록·사본 요청'],
+      ["Publicly supporting another company's union",'SNS 등'],
+      ['Asked supervisor about unions',''],
+      ['Mentioned need for union to supervisor',''],
+      ['Internal complaint posted publicly','SNS, local media']
+    ]},
+    2: {label:'Phase II — Visible Risk', base:'MEDIUM', cls:'p2', items:[
+      ['Internal organizing group identified',''],
+      ['Union apparel worn by employee','t-shirt, hat'],
+      ['External union criticized company HR policy',''],
+      ['External union held meeting with employees','food/gifts provided'],
+      ['External union named ESMI as organizing target',''],
+      ['External union launched website mentioning ESMI',''],
+      ['External union collecting ESMI employee data',''],
+      ['Union leafleting observed in parking lot',''],
+      ['Union materials found inside facility','break room etc.'],
+      ['Employee attempted to hand card sign results to supervisor','']
+    ]},
+    3: {label:'Phase III — Active Campaign', base:'HIGH', cls:'p3', items:[
+      ['Card check method demanded',''],
+      ['NLRB petition filed / notification received',''],
+      ['Company campaign activity ongoing',''],
+      ['ULP charge filed against company',''],
+      ['Union campaign activity violated work rules',''],
+      ['Supervisor acted outside PRP guidelines',''],
+      ['Workplace conflict due to aggressive union campaign',''],
+      ['Employee personal data used by union without consent',''],
+      ['Political pressure for neutrality agreement',''],
+      ['48-hour pre-vote intensive communication needed','']
+    ]}
+  };
+  const IT_RANK = {LOW:1, MEDIUM:2, HIGH:3};
+  const IT_LEVELS = ['LOW','MEDIUM','HIGH'];
+  const kwPhase = {};
+  Object.keys(IT_PHASES).forEach(p=>IT_PHASES[p].items.forEach(([kw])=>kwPhase[kw]=+p));
+
+  let itIncidents = [];
+  let itNewId = null;                       // row-appear animation target
+  const itState = {                         // live form state
+    department:'', date: todayStr(), keywords:new Set(),
+    monitoring:false, monitoringId:'', notes:'', openPhases:new Set([1,2,3])
+  };
+
+  function todayStr(){
+    const d = new Date(), z = n=>String(n).padStart(2,'0');
+    return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());
+  }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function daysAgo(dateStr, ref){ return (ref - new Date(dateStr+'T00:00:00').getTime())/86400000; }
+
+  async function itLoad(){
+    try{ const r = await window.storage.get(IT_KEY, true); itIncidents = r ? (JSON.parse(r.value)||[]) : []; }
+    catch(e){ itIncidents = []; }
+    if(!Array.isArray(itIncidents)) itIncidents = [];
+  }
+  async function itSave(){
+    try{ await window.storage.set(IT_KEY, JSON.stringify(itIncidents), true); }catch(e){ console.error(e); }
+  }
+
+  /* department incident count within 30 days of a reference date */
+  function deptCountWithin30(dept, refDateStr, excludeId){
+    const ref = new Date(refDateStr+'T00:00:00').getTime();
+    return itIncidents.filter(x=>x.id!==excludeId && x.department===dept &&
+      daysAgo(x.date, ref) >= 0 && daysAgo(x.date, ref) <= 30).length;
+  }
+
+  /* risk auto-classification. Returns {level, reason, phases} */
+  function classify(department, dateStr, keywords, monitoring){
+    const phasesSel = [...new Set(keywords.map(k=>kwPhase[k]).filter(Boolean))];
+    if(keywords.length===0) return {level:null, reason:'키워드를 1개 이상 선택하면 위험도가 표시됩니다.', phases:[]};
+
+    const maxPhase = Math.max(...phasesSel);
+    let level = IT_PHASES[maxPhase].base;              // baseline from highest phase
+    const reasons = [];
+    reasons.push('Phase '+['','I','II','III'][maxPhase]+' activity detected.');
+
+    // 2+ keywords from Phase II or above → escalate one level
+    const p2plus = keywords.filter(k=>kwPhase[k]>=2).length;
+    if(p2plus>=2){
+      level = IT_LEVELS[Math.min(IT_RANK[level], 2)]; // Low→Medium, Medium→High, High→High
+      reasons.push('Multiple ('+p2plus+') elevated-phase indicators selected.');
+    }
+
+    // same department 2+ incidents in last 30 days → add one level
+    if(department){
+      const prior = deptCountWithin30(department, dateStr, itState.editingId);
+      if(prior>=2){
+        level = IT_LEVELS[Math.min(IT_RANK[level], 2)];
+        reasons.push('This department has had '+prior+' incidents in the past 30 days.');
+      }
+    }
+
+    // monitoring ON + Phase II/III keyword → escalate to High
+    if(monitoring && maxPhase>=2){
+      level = 'HIGH';
+      reasons.push('Employee flagged for monitoring on a visible/active indicator.');
+    }
+
+    return {level, reason:reasons.join(' '), phases:phasesSel.sort()};
+  }
+
+  function currentPreview(){
+    return classify(itState.department, itState.date, [...itState.keywords], itState.monitoring);
+  }
+
+  /* ---------- render: dashboard ---------- */
+  function renderDashboard(){
+    const host = document.getElementById('it-dashboard');
+    if(!host) return;
+    const ref = Date.now();
+    const total = itIncidents.length;
+    const highCount = itIncidents.filter(x=>x.riskLevel==='HIGH').length;
+    const deptFlags = IT_DEPTS.filter(d=>{
+      return itIncidents.filter(x=>x.department===d && daysAgo(x.date, ref)>=0 && daysAgo(x.date, ref)<=30).length >= 2;
+    });
+
+    const cards = `
+      <div class="it-cards">
+        <div class="it-card"><div class="lbl">Total incidents logged</div><div class="val plain">${total}</div></div>
+        <div class="it-card high"><div class="lbl">High risk incidents</div><div class="val">${highCount}</div></div>
+        <div class="it-card amber"><div class="lbl">Depts with 2+ in 30 days</div><div class="val">${deptFlags.length}</div></div>
+      </div>`;
+
+    // incident log table (newest first)
+    const rows = [...itIncidents].sort((a,b)=> itSortAsc ? (a.date>b.date?1:a.date<b.date?-1:a.createdAt-b.createdAt)
+                                                          : (a.date<b.date?1:a.date>b.date?-1:b.createdAt-a.createdAt));
+    const tableBody = rows.length===0
+      ? `<tr><td colspan="6" class="it-empty">아직 기록된 이슈가 없습니다. 아래 양식으로 첫 이슈를 기록하세요.</td></tr>`
+      : rows.map(x=>`<tr class="${x.id===itNewId?'it-row-new':''}">
+          <td style="white-space:nowrap;font-variant-numeric:tabular-nums;">${esc(x.date)}</td>
+          <td style="white-space:nowrap;">${esc(x.department)}</td>
+          <td>${x.keywords.map(k=>`<span class="it-kw">${esc(k)}</span>`).join('')}</td>
+          <td><span class="it-lvl ${x.riskLevel}">${x.riskLevel}</span></td>
+          <td style="text-align:center;">${x.monitoring?`<span title="${esc(x.monitoringId||'monitoring flagged')}">👁</span>`:''}</td>
+          <td>${esc(x.notes||'')}</td>
+          <td style="text-align:right;"><button class="it-del" title="삭제" data-del="${x.id}">✕</button></td>
+        </tr>`).join('');
+
+    const table = `
+      <div class="it-panel">
+        <div class="it-panel-head">Incident Log <span style="font-weight:400;font-size:11px;opacity:.75;">${total}건</span></div>
+        <div class="it-panel-body it-table-wrap">
+          <table class="it-table">
+            <thead><tr>
+              <th class="sortable" data-sort="date">Date ${itSortAsc?'▲':'▼'}</th>
+              <th>Department</th><th>Keywords</th><th>Risk</th><th>Monitor</th><th>Notes</th><th></th>
+            </tr></thead>
+            <tbody>${tableBody}</tbody>
+          </table>
+        </div>
+      </div>`;
+
+    // department heat map (last 30 days)
+    const deptMax = Math.max(1, ...IT_DEPTS.map(d=>itIncidents.filter(x=>x.department===d && daysAgo(x.date,ref)>=0 && daysAgo(x.date,ref)<=30).length));
+    const heatRows = IT_DEPTS.map(d=>{
+      const recent = itIncidents.filter(x=>x.department===d && daysAgo(x.date,ref)>=0 && daysAgo(x.date,ref)<=30);
+      const n = recent.length;
+      const highest = itIncidents.filter(x=>x.department===d).reduce((m,x)=>Math.max(m, IT_RANK[x.riskLevel]||0), 0);
+      const lvl = highest ? IT_LEVELS[highest-1] : 'NONE';
+      const pct = n ? Math.max(n/deptMax*100, 6) : 0;
+      return `<div class="it-heat-row">
+        <div class="it-heat-name">${esc(d)}</div>
+        <div class="it-heat-track">${n?`<div class="it-heat-fill ${lvl}" style="width:${pct}%;"></div>`:''}</div>
+        <div class="it-heat-meta">${n} · ${lvl==='NONE'?'—':lvl}</div>
+      </div>`;
+    }).join('');
+    const heat = `
+      <div class="it-panel">
+        <div class="it-panel-head">Department Heat Map <span style="font-weight:400;font-size:11px;opacity:.75;">최근 30일</span></div>
+        <div class="it-panel-body"><div class="it-heat">${heatRows}</div></div>
+      </div>`;
+
+    host.innerHTML = cards + table + heat;
+
+    host.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>itDelete(b.dataset.del)));
+    host.querySelectorAll('[data-sort]').forEach(b=>b.addEventListener('click', ()=>{ itSortAsc=!itSortAsc; renderDashboard(); }));
+    itNewId = null;
+  }
+  let itSortAsc = false;
+
+  /* ---------- render: form ---------- */
+  function renderForm(){
+    const host = document.getElementById('it-form');
+    if(!host) return;
+    const pv = currentPreview();
+    const badgeCls = pv.level || 'NONE';
+    const badgeTxt = pv.level ? ({HIGH:'🔴 HIGH',MEDIUM:'🟡 MEDIUM',LOW:'🟢 LOW'})[pv.level] : '— 대기중';
+
+    const phaseHtml = Object.keys(IT_PHASES).map(p=>{
+      const ph = IT_PHASES[p], open = itState.openPhases.has(+p);
+      const selN = ph.items.filter(([kw])=>itState.keywords.has(kw)).length;
+      const chips = ph.items.map(([kw, note])=>`
+        <div class="it-chip ${itState.keywords.has(kw)?'on':''}" data-kw="${esc(kw)}" role="button" tabindex="0" aria-pressed="${itState.keywords.has(kw)}">
+          <span>${esc(kw)}${note?`<small>${esc(note)}</small>`:''}</span>
+        </div>`).join('');
+      return `<div class="it-phase ${ph.cls} ${open?'open':''}">
+        <button type="button" class="it-phase-head" data-phase="${p}">
+          <span class="chev">▶</span>${esc(ph.label)}
+          <span class="cnt">${selN?selN+' 선택':''} ${ph.items.length}개</span>
+        </button>
+        <div class="it-chips">${chips}</div>
+      </div>`;
+    }).join('');
+
+    host.innerHTML = `
+      <div class="it-panel">
+        <div class="it-panel-head">Log New Incident</div>
+        <div class="it-panel-body">
+          <div class="it-risk-preview">
+            <span class="it-risk-badge ${badgeCls}">${badgeTxt}</span>
+            <span class="it-risk-reason">${esc(pv.reason)}</span>
+          </div>
+
+          <div class="it-field">
+            <label>Department<span class="req">*</span></label>
+            <select class="it-select" id="it-dept">
+              <option value="">— 부서 선택 —</option>
+              ${IT_DEPTS.map(d=>`<option value="${esc(d)}" ${itState.department===d?'selected':''}>${esc(d)}</option>`).join('')}
+            </select>
+          </div>
+
+          <div class="it-field">
+            <label>Date<span class="req">*</span></label>
+            <input type="date" class="it-date" id="it-date" value="${esc(itState.date)}">
+          </div>
+
+          <div class="it-field">
+            <label>Issue Keywords<span class="req">*</span></label>
+            ${phaseHtml}
+          </div>
+
+          <div class="it-field">
+            <label>Employee Monitoring</label>
+            <div class="it-toggle-row" id="it-mon-toggle">
+              <button type="button" class="it-switch ${itState.monitoring?'on':''}" aria-pressed="${itState.monitoring}" aria-label="Flag for monitoring"></button>
+              <span>Flag employee for ongoing monitoring</span>
+            </div>
+            ${itState.monitoring?`<input type="text" class="it-text" id="it-mon-id" style="margin-top:10px;max-width:340px;" placeholder="Employee ID or identifier (optional)" value="${esc(itState.monitoringId)}">`:''}
+          </div>
+
+          <div class="it-field">
+            <label>Additional Notes</label>
+            <input type="text" class="it-text" id="it-notes" placeholder="Optional — keep it brief" value="${esc(itState.notes)}">
+          </div>
+
+          <div class="it-actions">
+            <button type="button" class="it-btn" id="it-submit">Log Incident</button>
+            <button type="button" class="it-btn ghost" id="it-clear">Clear form</button>
+          </div>
+          <div class="it-confirm" id="it-confirm"></div>
+        </div>
+      </div>`;
+
+    // wire up — keep focus-free rebinds to preserve typing where possible
+    host.querySelector('#it-dept').addEventListener('change', e=>{ itState.department=e.target.value; softRefreshPreview(); });
+    host.querySelector('#it-date').addEventListener('change', e=>{ itState.date=e.target.value; softRefreshPreview(); });
+    host.querySelectorAll('[data-phase]').forEach(b=>b.addEventListener('click', ()=>{
+      const p=+b.dataset.phase; itState.openPhases.has(p)?itState.openPhases.delete(p):itState.openPhases.add(p); renderForm();
+    }));
+    host.querySelectorAll('[data-kw]').forEach(c=>{
+      const toggle=()=>{ const k=c.dataset.kw; itState.keywords.has(k)?itState.keywords.delete(k):itState.keywords.add(k); renderForm(); };
+      c.addEventListener('click', toggle);
+      c.addEventListener('keydown', e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(); } });
+    });
+    host.querySelector('#it-mon-toggle').addEventListener('click', ()=>{ itState.monitoring=!itState.monitoring; renderForm(); });
+    const monId = host.querySelector('#it-mon-id'); if(monId) monId.addEventListener('input', e=>itState.monitoringId=e.target.value);
+    host.querySelector('#it-notes').addEventListener('input', e=>itState.notes=e.target.value);
+    host.querySelector('#it-submit').addEventListener('click', itSubmit);
+    host.querySelector('#it-clear').addEventListener('click', itClearForm);
+  }
+
+  /* update only the preview badge without re-rendering the whole form (keeps dropdown UX snappy) */
+  function softRefreshPreview(){
+    const pv = currentPreview();
+    const badge = document.querySelector('#it-form .it-risk-badge');
+    const reason = document.querySelector('#it-form .it-risk-reason');
+    if(!badge) return;
+    badge.className = 'it-risk-badge ' + (pv.level||'NONE');
+    badge.textContent = pv.level ? ({HIGH:'🔴 HIGH',MEDIUM:'🟡 MEDIUM',LOW:'🟢 LOW'})[pv.level] : '— 대기중';
+    reason.textContent = pv.reason;
+  }
+
+  async function itSubmit(){
+    const confirmEl = document.getElementById('it-confirm');
+    if(!itState.department){ confirmEl.style.color='var(--it-high)'; confirmEl.textContent='부서를 선택하세요.'; return; }
+    if(itState.keywords.size===0){ confirmEl.style.color='var(--it-high)'; confirmEl.textContent='키워드를 1개 이상 선택하세요.'; return; }
+    if(!itState.date){ confirmEl.style.color='var(--it-high)'; confirmEl.textContent='날짜를 선택하세요.'; return; }
+
+    const keywords = [...itState.keywords];
+    const res = classify(itState.department, itState.date, keywords, itState.monitoring);
+    const id = 'it-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    const incident = {
+      id, date:itState.date, department:itState.department, keywords,
+      phases:res.phases, riskLevel:res.level, riskReason:res.reason,
+      monitoring:itState.monitoring, monitoringId:itState.monitoring?itState.monitoringId:'',
+      notes:itState.notes, createdAt:Date.now()
+    };
+    itIncidents.push(incident);
+    await itSave();
+    itNewId = id;
+
+    // reset form but keep department (HRBP usually logs several for one dept)
+    const keepDept = itState.department;
+    itState.date=todayStr(); itState.keywords=new Set(); itState.monitoring=false;
+    itState.monitoringId=''; itState.notes=''; itState.department=keepDept;
+
+    renderDashboard();
+    renderForm();
+    const c = document.getElementById('it-confirm');
+    c.style.color='var(--it-green)';
+    c.textContent='✓ Incident logged — '+incident.riskLevel+' risk.';
+    setTimeout(()=>{ if(c) c.textContent=''; }, 5000);
+  }
+
+  function itClearForm(){
+    itState.date=todayStr(); itState.keywords=new Set(); itState.monitoring=false;
+    itState.monitoringId=''; itState.notes=''; itState.department='';
+    renderForm();
+  }
+
+  async function itDelete(id){
+    if(!confirm('이 이슈 기록을 삭제하시겠습니까?')) return;
+    itIncidents = itIncidents.filter(x=>x.id!==id);
+    await itSave();
+    renderDashboard();
+    softRefreshPreview();
+  }
+
+  let itReady = false;
+  window.itRender = async function(){
+    if(!itReady){ await itLoad(); itReady = true; }
+    renderDashboard();
+    renderForm();
+  };
 })();
 </script>
 </body>
